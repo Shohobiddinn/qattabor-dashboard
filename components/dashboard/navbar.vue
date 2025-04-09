@@ -1,6 +1,7 @@
 <template>
     <div class="flex justify-between">
-        <UButton icon="i-lucide-align-justify" label="" />
+        <div >
+        </div>
         <UiMode />
 
     </div>

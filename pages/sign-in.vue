@@ -23,14 +23,7 @@ async function handleSignIn() {
 
   try {
     const { data, error } = await request('/token', 'post', formData(signInData.value))
-
-    if (error.value) {
-      console.error('Xatolik:', error.value)
-    } else {
-      console.log('Muvaffaqiyatli:', data.value)
-    }
   } catch (err) {
-    console.error('Kutilmagan xatolik:', err)
   } finally {
     loading.value = false
   }
@@ -56,7 +49,8 @@ async function handleSignIn() {
 
         <UFormGroup label="Parol" name="password">
           <div class="relative">
-            <UInput v-model="signInData.password" :type="passwordType" placeholder="••••••••" icon="i-lucide-lock" required />
+            <UInput v-model="signInData.password" :type="passwordType" placeholder="••••••••" icon="i-lucide-lock"
+              required />
             <button type="button" @click="showPassword = !showPassword"
               class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer">
               <UIcon :name="eyeIcon" class="w-5 h-5" />

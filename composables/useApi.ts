@@ -1,3 +1,5 @@
+import handleError from "~/utils/handle"
+
 // composables/useApi.ts
 export const useApi = () => {
     const { $api } = useNuxtApp()
@@ -11,6 +13,7 @@ export const useApi = () => {
         })
         return response.data
       } catch (err) {
+        handleError(err)
         throw err
       }
     }

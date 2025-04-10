@@ -1,1 +1,3 @@
-export * from './formData'
+export * from './formData';
+export * from './alertWarning';
+export * from './handle'

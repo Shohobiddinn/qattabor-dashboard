@@ -1,22 +1,41 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { LoginType } from '~/types'
+definePageMeta({
+  layout: 'sign-in'
+})
+const signInData = ref<LoginType>(
+  {
+    username: '',
+    password: ''
+  }
+)
 
-const login = ref('')
-const password = ref('')
 const loading = ref(false)
 const showPassword = ref(true)
 
 const passwordType = computed(() => showPassword.value ? 'text' : 'password')
 const eyeIcon = computed(() => showPassword.value ? 'i-lucide-eye-off' : 'i-lucide-eye')
+const { request } = useApi()
 
-function handleSignIn() {
+async function handleSignIn() {
   loading.value = true
-  setTimeout(() => {
-    console.log('Login:', login.value)
-    console.log('Password:', password.value)
+
+  try {
+    const { data, error } = await request('/token', 'post', formData(signInData.value))
+
+    if (error.value) {
+      console.error('Xatolik:', error.value)
+    } else {
+      console.log('Muvaffaqiyatli:', data.value)
+    }
+  } catch (err) {
+    console.error('Kutilmagan xatolik:', err)
+  } finally {
     loading.value = false
-  }, 1000)
+  }
 }
+
 </script>
 
 
@@ -32,12 +51,12 @@ function handleSignIn() {
         </template>
 
         <UFormGroup label="Login" name="login">
-          <UInput v-model="login" type="text" placeholder="Login" icon="i-lucide-mail" required />
+          <UInput v-model="signInData.username" type="text" placeholder="Login" icon="i-lucide-mail" required />
         </UFormGroup>
 
         <UFormGroup label="Parol" name="password">
           <div class="relative">
-            <UInput v-model="password" :type="passwordType" placeholder="••••••••" icon="i-lucide-lock" required />
+            <UInput v-model="signInData.password" :type="passwordType" placeholder="••••••••" icon="i-lucide-lock" required />
             <button type="button" @click="showPassword = !showPassword"
               class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer">
               <UIcon :name="eyeIcon" class="w-5 h-5" />

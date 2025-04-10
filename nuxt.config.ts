@@ -5,10 +5,13 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@pinia/nuxt'],
   runtimeConfig: {
     public: {
-      baseURL: process.env.BASE_URL || 'default-url', 
+      apiBase: process.env.BASE_URL || 'default-url', 
     },
   },
   build: {
     transpile: ['@nuxt/ui']
   },
+  plugins: [
+    '~/plugins/axios.ts'
+  ]
 })

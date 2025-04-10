@@ -1,11 +1,11 @@
 <template>
     <div class="flex">
       <!-- Sidebar -->
-      <DashboardSidebar />
+      <UiSidebar />
   
       <!-- Asosiy kontent -->
       <div class="flex-1 md:ml-64 px-2 w-full">
-        <DashboardNavbar />
+        <UiNavbar />
         <main class="py-4">
           <NuxtPage />
         </main>

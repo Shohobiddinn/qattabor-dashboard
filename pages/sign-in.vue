@@ -17,12 +17,14 @@ const showPassword = ref(true)
 const passwordType = computed(() => showPassword.value ? 'text' : 'password')
 const eyeIcon = computed(() => showPassword.value ? 'i-lucide-eye-off' : 'i-lucide-eye')
 const { request } = useApi()
-
+const authStore = useAuthStore()
 async function handleSignIn() {
   loading.value = true
 
   try {
-    const { data, error } = await request('/token', 'post', formData(signInData.value))
+    const data = await request('/token', 'post', formData(signInData.value));
+    authStore.setUser(data);
+    navigateTo('/')
   } catch (err) {
   } finally {
     loading.value = false

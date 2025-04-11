@@ -2,9 +2,9 @@
     <div class="space-y-6">
       <!-- Title & Back -->
       <div class="flex items-center justify-between">
-        <div class="text-xl font-bold">"{{ category?.name }}" uchun maqolalar</div>
+        <div class="text-xl font-bold">Joylar</div>
         <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true">
-          Maqola qo‘shish
+          Manzil qo‘shish
         </UButton>
       </div>
   
@@ -86,7 +86,6 @@
   // Router orqali category_id olish
   const route = useRoute()
   const categoryId = route.params.category_id
-  
   // Kategoriya va maqolalar (simulyatsiya uchun static)
   const category = ref(null)
   const articles = ref([])

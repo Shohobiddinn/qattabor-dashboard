@@ -14,7 +14,7 @@
     </div>
     <!-- Skeleton -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="loading">
-      <UiSkeleton v-for="(item, index) in 9" :key="index" />
+      <UiSkeleton v-for="(item, index) in 6" :key="index" />
 
     </div>
     <!-- Kategoriyalar ro'yxati -->
@@ -71,7 +71,7 @@
       </UCard>
 
     </div>
-    <UPagination v-model="categories.page" :page-count="5" :total="categories.total_count"
+    <UPagination v-model="categories.page" :page-count="12" :total="categories.total_count"
       v-if="categories.data.length" />
     <div v-else-if="!loading && !categories.data.length" class="flex justify-center">
       <h1>Ma'lumot topilmadi !</h1>
@@ -236,8 +236,7 @@ const openEditModal = (category) => {
 const saveCategory = async () => {
 
   try {
-    editCategory.value.slug = "hi";
-    const { data, error, refresh } = await request(`/category/update`, 'put', formData(editCategory.value))
+    const { data, error, refresh } = await request(`/category/upd`, 'put', formData(editCategory.value))
     const index = categories.data.value.findIndex(c => c.id === editCategory.value.id)
     if (index !== -1) {
       categories.value[index] = { ...editCategory.value }

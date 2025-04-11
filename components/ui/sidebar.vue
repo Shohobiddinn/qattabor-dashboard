@@ -38,7 +38,7 @@ const isOpen = ref(false)
 
 const items = [
   { to: '/', icon: 'i-heroicons-home', label: 'Kategoriyalar' },
-  // { to: '/about', icon: 'i-heroicons-user', label: 'Biz haqimizda' },
+  { to: '/users', icon: 'i-heroicons-users', label: 'Hodimlar' },
   // { to: '/contact', icon: 'i-heroicons-phone', label: 'Aloqa' }
 ]
 </script>

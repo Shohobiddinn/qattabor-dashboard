@@ -55,9 +55,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         isRefreshing = true
         try {
           const response = await axios.post(`${config.public.apiBase}/refresh_token`, {
-            refresh_token: refreshCookie.value,
+            token: refreshCookie.value,
           })
-
+          useCookie('access_token').value = response.data.access_token
           const newToken: string = response.data.access_token
           accessCookie.value = newToken
 
@@ -67,6 +67,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           originalRequest.headers.Authorization = `Bearer ${newToken}`
           return apiClient(originalRequest)
         } catch (refreshError) {
+          useCookie('access_token').value = null
+          navigateTo('/sign-in')
           isRefreshing = false
           return Promise.reject(refreshError)
         }

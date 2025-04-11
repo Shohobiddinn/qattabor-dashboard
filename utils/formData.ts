@@ -4,7 +4,7 @@
  * @param data - Kalit-qiymat juftliklar ko‘rinishidagi obyekt
  * @returns FormData obyekt
  */
-export function formData(data: Record<string, any>): FormData {
+export function formData(data: Record<any, any>): FormData {
     const formData = new FormData();
     
     Object.entries(data).forEach(([key, value]) => {

@@ -14,6 +14,9 @@ export default async function handleError(error: any) {
             if (!window.location.href.includes("/sign-in")) {
                 // navigateTo("/sign-in");
             }
+        }else if(status == 500){
+            alertWarning("warning", "Xatolik yuz berdi");
+
         }
     }
 }

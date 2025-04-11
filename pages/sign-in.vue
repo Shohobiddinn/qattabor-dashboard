@@ -2,7 +2,8 @@
 import { ref, computed } from 'vue'
 import type { LoginType } from '~/types'
 definePageMeta({
-  layout: 'sign-in'
+  layout: 'sign-in',
+  middleware: 'auth'
 })
 const signInData = ref<LoginType>(
   {
@@ -22,7 +23,7 @@ async function handleSignIn() {
   loading.value = true
 
   try {
-    const data = await request('/token', 'post', formData(signInData.value));
+    const { data } = await request('/token', 'post', formData(signInData.value));
     authStore.setUser(data);
     navigateTo('/')
   } catch (err) {

@@ -1,137 +1,131 @@
 <template>
-    <div>
-        <template>
-            <div class="space-y-6">
-                <!-- Filter va qidiruv paneli -->
-                <div class="flex flex-wrap gap-4">
-                    <div class="flex-1"></div>
-                    <UInput v-model="search" type="search" @change="getUserList" placeholder="Qidiruv..."
-                        class="w-full sm:w-auto flex-1" />
-                    <UButton :disabled="!search" icon="hugeicons:search-02" @click="getUserList"
-                        class="w-full sm:w-auto"></UButton>
-                    <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true" class="w-full sm:w-auto">
-                        Hodim qo‘shish
+    <div class="space-y-6">
+        <!-- Filter va qidiruv paneli -->
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1"></div>
+            <UInput v-model="search" type="search" @change="getUserList" placeholder="Qidiruv..."
+                class="w-full sm:w-auto flex-1" />
+            <UButton :disabled="!search" icon="hugeicons:search-02" @click="getUserList" class="w-full sm:w-auto">
+            </UButton>
+            <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true" class="w-full sm:w-auto">
+                Hodim qo‘shish
+            </UButton>
+        </div>
+
+        <!-- Skeleton -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="loading">
+            <UiSkeleton v-for="(item, index) in 6" :key="index" />
+        </div>
+
+        <!-- Foydalanuvchilar ro‘yxati -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="users.data.length && !loading">
+            <UCard v-for="user in users.data" :key="user.id">
+                <template #header>
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-semibold truncate">{{ user?.name }}</span>
+
+                        <!-- Popover menyu -->
+                        <UPopover :popper="{ placement: 'bottom-end' }">
+                            <UButton icon="i-heroicons-ellipsis-horizontal" color="gray" variant="ghost" />
+                            <template #panel>
+                                <div class="flex flex-col gap-1 p-2 w-40">
+                                    <UButton icon="i-heroicons-pencil-square" variant="ghost"
+                                        @click="openEditModal(user)" class="justify-start">
+                                        Tahrirlash
+                                    </UButton>
+                                    <UButton icon="i-heroicons-trash" color="red" variant="ghost"
+                                        @click="deleteUser(user.id)" class="justify-start">
+                                        O‘chirish
+                                    </UButton>
+                                </div>
+                            </template>
+                        </UPopover>
+                    </div>
+                </template>
+
+                <!-- Rasm -->
+                <div class="mt-2">
+                    <div class="rounded-md w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <img v-if="user.photo" :src="user.photo" alt="Image" class="object-cover w-full h-full" />
+                        <div v-else class="text-gray-400 text-sm">Rasm yo‘q</div>
+                    </div>
+                </div>
+
+                <!-- Tavsif -->
+                <p class="text-sm text-gray-600">{{ user.description || 'Tavsif yo‘q' }}</p>
+
+                <template #footer>
+                    <div class="text-xs text-gray-400 text-right">
+                        Yangilangan: {{ new Date(user.updated_at).toLocaleString('uz-UZ') }}
+                    </div>
+                </template>
+            </UCard>
+        </div>
+
+        <!-- Qo‘shish modal -->
+        <UModal v-model="isCreateModalOpen">
+            <UCard>
+                <template #header>Foydalanuvchi qo‘shish</template>
+                <UForm :state="newUser" :schema="schema" @submit="createUser">
+                    <UFormGroup name="name" label="Foydalanuvchi nomi">
+                        <UInput v-model="newUser.name" placeholder="Foydalanuvchi nomi" />
+                    </UFormGroup>
+                    <UFormGroup name="username" label="Login">
+                        <UInput v-model="newUser.username" placeholder="Login" />
+                    </UFormGroup>
+                    <UFormGroup name="password" label="Parol">
+                        <UInput v-model="newUser.password_hash" placeholder="Parol" />
+                    </UFormGroup>
+                    <UFormGroup name="photo" label="Rasm">
+                        <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-blue-50 file:text-blue-700
+               hover:file:bg-blue-100" />
+                    </UFormGroup>
+
+                    <UFormGroup name="description" label="Tavsif">
+                        <UTextarea v-model="newUser.description" placeholder="Tavsif" />
+                    </UFormGroup>
+
+                    <UButton class="mt-2" type="submit" color="primary" block>
+                        Saqlash
                     </UButton>
-                </div>
+                </UForm>
+            </UCard>
+        </UModal>
 
-                <!-- Skeleton -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="loading">
-                    <UiSkeleton v-for="(item, index) in 6" :key="index" />
-                </div>
+        <!-- Tahrirlash modal -->
+        <UModal v-model="isEditModalOpen">
+            <UCard>
+                <template #header>Foydalanuvchini tahrirlash</template>
+                <UForm :state="editUser" :schema="schema" @submit="saveUser">
+                    <UFormGroup name="name" label="Foydalanuvchi nomi">
+                        <UInput v-model="editUser.name" placeholder="Foydalanuvchi nomi" />
+                    </UFormGroup>
 
-                <!-- Foydalanuvchilar ro‘yxati -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="users.data.length && !loading">
-                    <UCard v-for="user in users.data" :key="user.id">
-                        <template #header>
-                            <div class="flex justify-between items-center">
-                                <span class="text-lg font-semibold truncate">{{ user?.name }}</span>
-
-                                <!-- Popover menyu -->
-                                <UPopover :popper="{ placement: 'bottom-end' }">
-                                    <UButton icon="i-heroicons-ellipsis-horizontal" color="gray" variant="ghost" />
-                                    <template #panel>
-                                        <div class="flex flex-col gap-1 p-2 w-40">
-                                            <UButton icon="i-heroicons-pencil-square" variant="ghost"
-                                                @click="openEditModal(user)" class="justify-start">
-                                                Tahrirlash
-                                            </UButton>
-                                            <UButton icon="i-heroicons-trash" color="red" variant="ghost"
-                                                @click="deleteUser(user.id)" class="justify-start">
-                                                O‘chirish
-                                            </UButton>
-                                        </div>
-                                    </template>
-                                </UPopover>
-                            </div>
-                        </template>
-
-                        <!-- Rasm -->
-                        <div class="mt-2">
-                            <div
-                                class="rounded-md w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-                                <img v-if="user.photo" :src="user.photo" alt="Image"
-                                    class="object-cover w-full h-full" />
-                                <div v-else class="text-gray-400 text-sm">Rasm yo‘q</div>
-                            </div>
-                        </div>
-
-                        <!-- Tavsif -->
-                        <p class="text-sm text-gray-600">{{ user.description || 'Tavsif yo‘q' }}</p>
-
-                        <template #footer>
-                            <div class="text-xs text-gray-400 text-right">
-                                Yangilangan: {{ new Date(user.updated_at).toLocaleString('uz-UZ') }}
-                            </div>
-                        </template>
-                    </UCard>
-                </div>
-
-                <!-- Qo‘shish modal -->
-                <UModal v-model="isCreateModalOpen">
-                    <UCard>
-                        <template #header>Foydalanuvchi qo‘shish</template>
-                        <UForm :state="newUser" :schema="schema" @submit="createUser">
-                            <UFormGroup name="name" label="Foydalanuvchi nomi">
-                                <UInput v-model="newUser.name" placeholder="Foydalanuvchi nomi" />
-                            </UFormGroup>
-                            <UFormGroup name="username" label="Login">
-                                <UInput v-model="newUser.username" placeholder="Login" />
-                            </UFormGroup>
-                            <UFormGroup name="password" label="Parol">
-                                <UInput v-model="newUser.password_hash" placeholder="Parol" />
-                            </UFormGroup>
-                            <UFormGroup name="photo" label="Rasm">
-                                <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+                    <UFormGroup name="photo" label="Rasm">
+                        <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
                file:bg-blue-50 file:text-blue-700
                hover:file:bg-blue-100" />
-                            </UFormGroup>
+                    </UFormGroup>
 
-                            <UFormGroup name="description" label="Tavsif">
-                                <UTextarea v-model="newUser.description" placeholder="Tavsif" />
-                            </UFormGroup>
+                    <UFormGroup name="description" label="Tavsif">
+                        <UTextarea v-model="editUser.description" placeholder="Tavsif" />
+                    </UFormGroup>
 
-                            <UButton class="mt-2" type="submit" color="primary" block>
-                                Saqlash
-                            </UButton>
-                        </UForm>
-                    </UCard>
-                </UModal>
-
-                <!-- Tahrirlash modal -->
-                <UModal v-model="isEditModalOpen">
-                    <UCard>
-                        <template #header>Foydalanuvchini tahrirlash</template>
-                        <UForm :state="editUser" :schema="schema" @submit="saveUser">
-                            <UFormGroup name="name" label="Foydalanuvchi nomi">
-                                <UInput v-model="editUser.name" placeholder="Foydalanuvchi nomi" />
-                            </UFormGroup>
-
-                            <UFormGroup name="photo" label="Rasm">
-                                <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
-                            </UFormGroup>
-
-                            <UFormGroup name="description" label="Tavsif">
-                                <UTextarea v-model="editUser.description" placeholder="Tavsif" />
-                            </UFormGroup>
-
-                            <UButton type="submit" color="primary" block>
-                                Saqlash
-                            </UButton>
-                        </UForm>
-                    </UCard>
-                </UModal>
-            </div>
-        </template>
-
+                    <UButton type="submit" color="primary" block>
+                        Saqlash
+                    </UButton>
+                </UForm>
+            </UCard>
+        </UModal>
     </div>
+
 </template>
 
 <script setup>
@@ -198,7 +192,7 @@ const createUser = async () => {
         const id = Date.now()
         const { data, error, refresh } = await request(`/users/create`, 'post', formData(newUser.value));
         users.value.data.push(
-            ...newUser.value,id
+            ...newUser.value, id
         )
         newUser.value = {
             name: '',

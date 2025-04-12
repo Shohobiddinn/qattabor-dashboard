@@ -39,6 +39,6 @@ const isOpen = ref(false)
 const items = [
   { to: '/', icon: 'i-heroicons-home', label: 'Kategoriyalar' },
   { to: '/users', icon: 'i-heroicons-users', label: 'Hodimlar' },
-  // { to: '/contact', icon: 'i-heroicons-phone', label: 'Aloqa' }
+  { to: '/regions', icon: 'i-heroicons-map-pin', label: 'Hududlar' }
 ]
 </script>

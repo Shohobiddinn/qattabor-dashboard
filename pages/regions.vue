@@ -4,10 +4,6 @@
             <!-- Filter va qidiruv paneli -->
             <div class="flex flex-wrap gap-4">
                 <div class="flex-1"></div>
-                <UInput v-model="search" type="search" @change="getRegionList" placeholder="Qidiruv..."
-                    class="w-full sm:w-auto flex-1" />
-                <UButton :disabled="!search" icon="hugeicons:search-02" @click="getRegionList" class="w-full sm:w-auto">
-                </UButton>
                 <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true" class="w-full sm:w-auto">
                     Hudud qo‘shish
                 </UButton>
@@ -51,9 +47,6 @@
                         </div>
                     </div>
 
-                    <!-- Tavsif -->
-                    <p class="text-sm text-gray-600">{{ region.description || 'Tavsif yo‘q' }}</p>
-
                     <template #footer>
                         <div class="text-xs text-gray-400 text-right">
                             Yangilangan: {{ new Date(region.updated_at).toLocaleString('uz-UZ') }}
@@ -61,32 +54,21 @@
                     </template>
                 </UCard>
             </div>
-
+            <UPagination v-model="regions.page" :page-count="12" :total="regions.total_count"
+                v-if="regions.data.length" />
             <!-- Qo‘shish modal -->
             <UModal v-model="isCreateModalOpen">
                 <UCard>
-                    <template #header>Foydalanuvchi qo‘shish</template>
-                    <UForm :state="newRegion" :schema="schema" @submit="createRegion">
-                        <UFormGroup name="name" label="Foydalanuvchi nomi">
-                            <UInput v-model="newRegion.name" placeholder="Foydalanuvchi nomi" />
+                    <template #header>Hudud qo‘shish</template>
+                    <UForm :state="newRegion" :schema="regionCreateSchema" @submit="createRegion">
+                        <UFormGroup name="title" label="Hudud nomi">
+                            <UInput v-model="newRegion.title" placeholder="Hudud nomi" />
                         </UFormGroup>
-                        <UFormGroup name="username" label="Login">
-                            <UInput v-model="newRegion.username" placeholder="Login" />
+                        <UFormGroup name="latitude" label="Kenglik">
+                            <UInput v-model="newRegion.latitude" placeholder="Kenglik" />
                         </UFormGroup>
-                        <UFormGroup name="password" label="Parol">
-                            <UInput v-model="newRegion.password_hash" placeholder="Parol" />
-                        </UFormGroup>
-                        <UFormGroup name="photo" label="Rasm">
-                            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
-                        </UFormGroup>
-
-                        <UFormGroup name="description" label="Tavsif">
-                            <UTextarea v-model="newRegion.description" placeholder="Tavsif" />
+                        <UFormGroup name="longitude" label="Balandlik">
+                            <UInput v-model="newRegion.longitude" placeholder="Balandlik" />
                         </UFormGroup>
 
                         <UButton class="mt-2" type="submit" color="primary" block>
@@ -99,26 +81,19 @@
             <!-- Tahrirlash modal -->
             <UModal v-model="isEditModalOpen">
                 <UCard>
-                    <template #header>Foydalanuvchini tahrirlash</template>
-                    <UForm :state="editRegion" :schema="schema" @submit="saveRegion">
-                        <UFormGroup name="name" label="Foydalanuvchi nomi">
-                            <UInput v-model="editRegion.name" placeholder="Foydalanuvchi nomi" />
+                    <template #header>Hududni tahrirlash</template>
+                    <UForm :state="editRegion" :schema="regionCreateSchema" @submit="saveRegion">
+                        <UFormGroup name="title" label="Hudud nomi">
+                            <UInput v-model="editRegion.title" placeholder="Hudud nomi" />
+                        </UFormGroup>
+                        <UFormGroup name="latitude" label="Kenglik">
+                            <UInput v-model="editRegion.latitude" placeholder="Kenglik" />
+                        </UFormGroup>
+                        <UFormGroup name="longitude" label="Balandlik">
+                            <UInput v-model="editRegion.longitude" placeholder="Balandlik" />
                         </UFormGroup>
 
-                        <UFormGroup name="photo" label="Rasm">
-                            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
-                        </UFormGroup>
-
-                        <UFormGroup name="description" label="Tavsif">
-                            <UTextarea v-model="editRegion.description" placeholder="Tavsif" />
-                        </UFormGroup>
-
-                        <UButton type="submit" color="primary" block>
+                        <UButton class="mt-2" type="submit" color="primary" block>
                             Saqlash
                         </UButton>
                     </UForm>
@@ -130,10 +105,20 @@
 </template>
 
 <script setup>
-import { z } from "zod"
+import { onMounted } from 'vue'
+const { coords, error, getLocation } = useGeolocation()
 import { ref, watch } from 'vue'
-import { formData } from "~/utils"
+import { regionCreateSchema } from "~/schemas"
 const { request } = useApi()
+onMounted(() => {
+    getLocation()
+    setTimeout(() => {
+        newRegion.value.latitude = coords.value.latitude
+        newRegion.value.longitude = coords.value.longitude
+
+    }, 2000)
+
+})
 const loading = ref(false)
 const search = ref('')
 const regions = ref({
@@ -156,28 +141,19 @@ const isCreateModalOpen = ref(false)
 const isEditModalOpen = ref(false)
 
 const newRegion = ref({
-    name: '',
-    username: "",
-    password_hash: '',
-    role: 'admin',
-    status: 'actived',
-    description: '',
-    photo: null,
+    parent_id: 0,
+    title: "",
+    latitude: 0,
+    longitude: 0
 })
 
-const schema = z.object({
-    name: z.string().min(1, 'Foydalanuvchi nomi majburiy'),
-    username: z.string().min(1, 'Login majburiy'),
-    password_hash: z.string().min(1, 'Parol majburiy'),
-    description: z.string().min(1, 'Tavsif majburiy'),
-    photo: z.any().optional().refine((file) => !file || file instanceof File, 'Faqat rasm fayli tanlang')
-})
 
 const editRegion = ref({
-    id: 0,
-    name: '',
-    description: '',
-    photo: null,
+    slug: "",
+    parent_id: 0,
+    title: "",
+    latitude: 0,
+    longitude: 0
 })
 
 function photoSubmit(event) {
@@ -191,32 +167,32 @@ function photoSubmit(event) {
 const createRegion = async () => {
     try {
         const id = Date.now()
-        const { data, error, refresh } = await request(`/regions/create`, 'post', formData(newRegion.value));
-        regions.value.data.push(
-            ...newRegion.value, id
-        )
-        newRegion.value = {
-            name: '',
-            username: "",
-            password_hash: '',
-            role: 'admin',
-            status: true,
-            description: '',
-            photo: null,
-        }
+        const { data, error, refresh } = await request(`/region/create`, 'post', newRegion.value);
+        if (error) return;
         isCreateModalOpen.value = false
+        getRegionList();
+        newRegion.value = {
+            parent_id: 0,
+            title: "",
+            latitude: 0,
+            longitude: 0
+        }
 
     } catch { }
 }
 
 const saveRegion = async () => {
     try {
-        const { data, error, refresh } = await request(`/region/update`, 'put', formData(editRegion.value))
-        const index = regions.value.data.findIndex(u => u.id === editRegion.value.id)
-        if (index !== -1) {
-            regions.value[index] = { ...editRegion.value }
+        const postData = {
+            parent_id: 0,
+            title: editRegion.value.title,
+            slug: editRegion.value.slug,
+            latitude: editRegion.value.latitude,
+            longitude: editRegion.value.longitude
         }
-        editRegion.value = { name: '', description: '', photo: null }
+        const { data, error, refresh } = await request(`/region/update`, 'put', postData)
+        if (error) return;
+        getRegionList();
         isEditModalOpen.value = false
     } catch { }
 }
@@ -229,7 +205,9 @@ const openEditModal = (region) => {
     editRegion.value = { ...region }
     isEditModalOpen.value = true
 }
-
+watch(regions.page, () => {
+    getRegionList();
+})
 </script>
 
 <style lang="scss" scoped></style>

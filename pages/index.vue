@@ -4,9 +4,10 @@
     <div class="flex flex-wrap gap-4">
       <div class="flex-1">
       </div>
-      <UInput v-model="search" type="search" @change="getCaregory" placeholder="Qidiruv..." class="w-full sm:w-auto flex-1" />
+      <UInput v-model="search" type="search" @change="getCaregory" placeholder="Qidiruv..."
+        class="w-full sm:w-auto flex-1" />
       <UButton :disabled="!search" icon="hugeicons:search-02" @click="getCaregory" class="w-full sm:w-auto">
-        
+
       </UButton>
       <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true" class="w-full sm:w-auto">
         Kategoriya qo‘shish
@@ -45,7 +46,7 @@
         <!-- Agar rasm bo‘lsa, ko‘rsatamiz -->
         <div class="mt-2">
           <div class="rounded-md w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-            <img v-if="category.photo" :src="category.photo" alt="Image" class="object-cover w-full h-full" />
+            <img v-if="category.photo" :src="config.public.apiImgUrl + category.photo" alt="Image" class="object-cover w-full h-full" />
             <div v-else class="text-gray-400 text-sm">Rasm yo‘q</div>
           </div>
         </div>
@@ -104,7 +105,6 @@
         </UForm>
       </UCard>
     </UModal>
-
     <!-- Tahrirlash modal -->
     <UModal v-model="isEditModalOpen">
       <UCard>
@@ -140,6 +140,7 @@
 definePageMeta({
   middleware: 'auth'
 })
+const config = useRuntimeConfig()
 import { ref, watch } from 'vue'
 import { formData } from "~/utils"
 const { request } = useApi()

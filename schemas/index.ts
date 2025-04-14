@@ -1,1 +1,2 @@
-export * from "./article.schema"
+export * from "./article.schema";
+export * from "./region.schema"

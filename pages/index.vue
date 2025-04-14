@@ -34,7 +34,7 @@
                     class="justify-start">
                     Tahrirlash
                   </UButton>
-                  <UButton icon="i-heroicons-trash" color="red" variant="ghost" @click="deleteCategory(category.id)"
+                  <UButton icon="i-heroicons-trash" color="red" variant="ghost" @click="deleteCategory(category.slug)"
                     class="justify-start">
                     O‘chirish
                   </UButton>
@@ -255,10 +255,9 @@ const saveCategory = async () => {
   }
 }
 
-const deleteCategory = async (id) => {
-  const { data, error, refresh } = await request(`/category/delete?slug=${id}`, 'put', formData(editCategory.value))
-
-  categories.value = categories.value.data.filter(c => c.id !== id)
+const deleteCategory = async (slug) => {
+  const { data, error, refresh } = await request(`/category/delete?slug=${slug}`, 'delete')
+  getCaregory();
 }
 
 const addArticle = (category) => {

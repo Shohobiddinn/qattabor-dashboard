@@ -10,6 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
   const accessCookie = useCookie<string>('access_token') || '';
   const refreshCookie = useCookie<string>('refresh_token') || '';
+  const authStore = useAuthStore()
 
   const apiClient: AxiosInstance = axios.create({
     baseURL: config.public.apiBase,
@@ -58,8 +59,10 @@ export default defineNuxtPlugin((nuxtApp) => {
             token: refreshCookie.value,
           })
           useCookie('access_token').value = response.data.access_token
+          useCookie('refresh_token').value = response.data.refresh_token
           const newToken: string = response.data.access_token
           accessCookie.value = newToken
+          authStore.setUser(response.data);
 
           onRefreshed(newToken)
           isRefreshing = false

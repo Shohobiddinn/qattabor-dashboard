@@ -31,7 +31,7 @@
                                             Tahrirlash
                                         </UButton>
                                         <UButton icon="i-heroicons-trash" color="red" variant="ghost"
-                                            @click="deleteRegion(region.id)" class="justify-start">
+                                            @click="deleteRegion(region.slug)" class="justify-start">
                                             O‘chirish
                                         </UButton>
                                     </div>
@@ -197,9 +197,9 @@ const saveRegion = async () => {
     } catch { }
 }
 
-const deleteRegion = async (id) => {
-    const { data, error, refresh } = await request(`/region/delete?id=${id}`, 'delete')
-    regions.value.data = regions.value.data.filter(u => u.id !== id)
+const deleteRegion = async (slug) => {
+    const { data, error, refresh } = await request(`/region/delete?slug=${slug}`, 'delete')
+    getRegionList();
 }
 const openEditModal = (region) => {
     editRegion.value = { ...region }

@@ -24,7 +24,7 @@
                     class="justify-start">
                     Tahrirlash
                   </UButton>
-                  <UButton icon="i-heroicons-trash" color="red" variant="ghost" @click="deleteArticle(article.id)"
+                  <UButton icon="i-heroicons-trash" color="red" variant="ghost" @click="deleteArticle(hotel.id)"
                     class="justify-start">
                     O‘chirish
                   </UButton>
@@ -79,7 +79,7 @@
         <template #header>Manzil qo‘shish</template>
         <UForm :state="form" :schema="articleSchema" @submit="submitForm" class="space-y-4">
           <UFormGroup name="photo" label="Rasm">
-            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+            <input required type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -150,7 +150,7 @@
         <template #header>Maqolani tahrirlash</template>
         <UForm :state="editArticle" :schema="articleSchema" @submit="saveArticle" class="space-y-4">
           <UFormGroup name="photo" label="Rasm">
-            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+            <input  type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -162,8 +162,8 @@
 
 
               <UFormGroup name="region_id" label="Hudud">
-                <USelect v-model="editArticle.region_id" :options="regions" option-attribute="title" value-attribute="id"
-                  placeholder="Hududdni tanlang" />
+                <USelect v-model="editArticle.region_id" :options="regions" option-attribute="title"
+                  value-attribute="id" placeholder="Hududdni tanlang" />
               </UFormGroup>
               <UFormGroup name="title" label="Sarlavha">
                 <UInput v-model="editArticle.title" placeholder="Sarlavha" />
@@ -297,8 +297,11 @@ async function saveArticle() {
 }
 
 // O‘chirish
-const deleteArticle = (id) => {
-  articles.value = articles.value.filter(a => a.id !== id)
+const deleteArticle = async (id) => {
+
+  const { data, error, refresh } = await request(`/articles/delete?id=${id}`, 'delete')
+  if (error) return;
+  getAll();
 }
 
 
@@ -315,6 +318,7 @@ const form = ref({
   status: false,
   latitude: 0,
   longitude: 0,
+  photo:'',
   start_date: new Date().toISOString().split('T')[0],
   end_date: new Date().toISOString().split('T')[0],
 })
@@ -323,7 +327,7 @@ async function submitForm() {
   let postForm = {
     ...form.value,
     categorie_id: categoryId,
-
+    slug: ''
   }
   const { data, error, refresh } = await request(`/articles/create`, 'post', postForm)
   if (error) return;

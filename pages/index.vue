@@ -46,7 +46,7 @@
         <!-- Agar rasm bo‘lsa, ko‘rsatamiz -->
         <div class="mt-2">
           <div class="rounded-md w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-            <img v-if="category.photo" :src="config.public.apiImgUrl + category.photo" alt="Image" class="object-cover w-full h-full" />
+            <img v-if="category.photo" :src="category.photo" alt="Image" class="object-cover w-full h-full" />
             <div v-else class="text-gray-400 text-sm">Rasm yo‘q</div>
           </div>
         </div>
@@ -87,7 +87,7 @@
           </UFormGroup>
 
           <UFormGroup name="photo" label="Kategoriya rasmi">
-            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+            <input type="file" required accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -109,7 +109,7 @@
     <UModal v-model="isEditModalOpen">
       <UCard>
         <template #header>Kategoriyani tahrirlash</template>
-        <UForm :state="editCategory" :schema="schema" @submit="saveCategory">
+        <UForm :state="editCategory" :schema="editSchema" @submit="saveCategory">
           <UFormGroup name="title" label="Kategoriya nomi">
             <UInput v-model="editCategory.title" placeholder="Kategoriya nomi" />
           </UFormGroup>
@@ -188,6 +188,10 @@ const schema = z.object({
       'Faqat rasm fayli tanlang'
     )
 })
+const editSchema = z.object({
+  title: z.string().min(1, 'Kategoriya nomi majburiy'),
+  description: z.string().min(1, 'Tavsif majburiy'),
+})
 const editCategory = ref({
   slug: '',
   parent_id: 0,
@@ -238,10 +242,7 @@ const saveCategory = async () => {
 
   try {
     const { data, error, refresh } = await request(`/category/upd`, 'put', formData(editCategory.value))
-    const index = categories.data.value.findIndex(c => c.id === editCategory.value.id)
-    if (index !== -1) {
-      categories.value[index] = { ...editCategory.value }
-    }
+    getCaregory();
     editCategory.value = {
       parent_id: 0,
       title: '',

@@ -3,9 +3,14 @@
     <!-- Title & Back -->
     <div class="flex items-center justify-between">
       <div class="text-xl font-bold">Joylar</div>
-      <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true">
-        Manzil qo‘shish
-      </UButton>
+      <div class="flex">
+        <USelect v-model="status" @change="getAll" :options="options" option-attribute="name" value-attribute="value"
+          placeholder="Holat">
+        </USelect>
+        <UButton icon="i-heroicons-plus" @click="isCreateModalOpen = true">
+          Manzil qo‘shish
+        </UButton>
+      </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="loading">
       <UiSkeleton v-for="(item, index) in 6" :key="index" />
@@ -150,7 +155,7 @@
         <template #header>Maqolani tahrirlash</template>
         <UForm :state="editArticle" :schema="articleSchema" @submit="saveArticle" class="space-y-4">
           <UFormGroup name="photo" label="Rasm">
-            <input  type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -223,7 +228,21 @@ import { ref, computed, onMounted } from 'vue'
 import { articleSchema } from '~/schemas'
 import { formData } from '~/utils'
 const config = useRuntimeConfig()
-
+const status = ref('published');
+const options = [
+  {
+    name: 'No faol',
+    value: 'inactived'
+  },
+  {
+    name: 'Kutilmoqda',
+    value: 'waiting'
+  },
+  {
+    name: 'Faol',
+    value: 'published'
+  },
+]
 const { coords, error, getLocation } = useGeolocation()
 onMounted(() => {
   getLocation()
@@ -269,7 +288,7 @@ const editArticle = ref({
 async function getAll() {
   try {
     loading.value = true;
-    const { data, error, refresh } = await request(`/articles?status=published&page=${articles.value.page}&page_size=${articles.value.page_size}&category_id=${categoryId}`, 'get');
+    const { data, error, refresh } = await request(`/articles?status=${status.value}&page=${articles.value.page}&page_size=${articles.value.page_size}&category_id=${categoryId}`, 'get');
 
     articles.value = data
 
@@ -318,7 +337,7 @@ const form = ref({
   status: false,
   latitude: 0,
   longitude: 0,
-  photo:'',
+  photo: '',
   start_date: new Date().toISOString().split('T')[0],
   end_date: new Date().toISOString().split('T')[0],
 })

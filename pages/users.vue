@@ -77,7 +77,7 @@
                         <UInput v-model="newUser.password_hash" placeholder="Parol" />
                     </UFormGroup>
                     <UFormGroup name="photo" label="Rasm">
-                        <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+                        <input type="file" required accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -100,13 +100,18 @@
         <UModal v-model="isEditModalOpen">
             <UCard>
                 <template #header>Foydalanuvchini tahrirlash</template>
-                <UForm :state="editUser" :schema="schema" @submit="saveUser">
+                <UForm :state="editUser" @submit="saveUser">
                     <UFormGroup name="name" label="Foydalanuvchi nomi">
                         <UInput v-model="editUser.name" placeholder="Foydalanuvchi nomi" />
                     </UFormGroup>
-
+                    <UFormGroup name="username" label="Login">
+                        <UInput v-model="editUser.username" placeholder="Login" />
+                    </UFormGroup>
+                    <UFormGroup name="password" label="Parol">
+                        <UInput v-model="editUser.password" placeholder="Parol" />
+                    </UFormGroup>
                     <UFormGroup name="photo" label="Rasm">
-                        <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+                        <input type="file" required accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -175,8 +180,11 @@ const schema = z.object({
 const editUser = ref({
     id: 0,
     name: '',
-    description: '',
+    username: '',
+    password: '',
+    role: '',
     photo: null,
+    status: 'actived'
 })
 
 function photoSubmit(event) {
@@ -189,11 +197,8 @@ function photoSubmit(event) {
 
 const createUser = async () => {
     try {
-        const id = Date.now()
         const { data, error, refresh } = await request(`/users/create`, 'post', formData(newUser.value));
-        users.value.data.push(
-            ...newUser.value, id
-        )
+        if (error) return;
         newUser.value = {
             name: '',
             username: "",
@@ -204,19 +209,21 @@ const createUser = async () => {
             photo: null,
         }
         isCreateModalOpen.value = false
-
+        getUserList();
     } catch { }
 }
 
 const saveUser = async () => {
     try {
-        const { data, error, refresh } = await request(`/user/update`, 'put', formData(editUser.value))
-        const index = users.value.data.findIndex(u => u.id === editUser.value.id)
-        if (index !== -1) {
-            users.value[index] = { ...editUser.value }
-        }
+        console.log(editUser.value);
+
+        const { data, error, refresh } = await request(`/users/update`, 'put', formData(editUser.value))
+        if (error) return;
+
         editUser.value = { name: '', description: '', photo: null }
         isEditModalOpen.value = false
+        getUserList();
+
     } catch { }
 }
 
@@ -225,7 +232,12 @@ const deleteUser = async (id) => {
     users.value.data = users.value.data.filter(u => u.id !== id)
 }
 const openEditModal = (user) => {
-    editUser.value = { ...user }
+    editUser.value = {
+        ...user,
+        password: '',
+        status: 'actived'
+
+    }
     isEditModalOpen.value = true
 }
 

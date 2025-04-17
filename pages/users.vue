@@ -111,7 +111,7 @@
                         <UInput v-model="editUser.password" placeholder="Parol" />
                     </UFormGroup>
                     <UFormGroup name="photo" label="Rasm">
-                        <input type="file" required accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+                        <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
                file:text-sm file:font-semibold
@@ -215,8 +215,7 @@ const createUser = async () => {
 
 const saveUser = async () => {
     try {
-        console.log(editUser.value);
-
+        editUser.value.status = 'true';
         const { data, error, refresh } = await request(`/users/update`, 'put', formData(editUser.value))
         if (error) return;
 
@@ -228,7 +227,7 @@ const saveUser = async () => {
 }
 
 const deleteUser = async (id) => {
-    const { data, error, refresh } = await request(`/user/delete?id=${id}`, 'delete')
+    const { data, error, refresh } = await request(`/users/delete?id=${id}`, 'delete')
     users.value.data = users.value.data.filter(u => u.id !== id)
 }
 const openEditModal = (user) => {

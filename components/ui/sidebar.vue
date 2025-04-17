@@ -4,7 +4,7 @@
       <NuxtLink v-for="item in items" :key="item.to" :to="item.to"
         class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors" :class="{
           'bg-primary text-white': route.path === item.to,
-          'hover:bg-gray-100': route.path !== item.to
+          'hover:bg-gray-100 hover:dark:text-black': route.path !== item.to
         }">
         <UIcon :name="item.icon" class="w-5 h-5" />
         <span class="text-sm font-medium">{{ item.label }}</span>
@@ -19,7 +19,7 @@
         <NuxtLink v-for="item in items" :key="item.to" :to="item.to" @click="isOpen = false"
           class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors" :class="{
             'bg-primary text-white': route.path === item.to,
-            'hover:bg-gray-100': route.path !== item.to
+            'hover:bg-gray-100 hover:dark:text-black': route.path !== item.to
           }">
           <UIcon :name="item.icon" class="w-5 h-5" />
           <span class="text-sm font-medium">{{ item.label }}</span>

@@ -10,7 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
   const accessCookie = useCookie<string>('access_token') || '';
   const refreshCookie = useCookie<string>('refresh_token') || '';
-  const authStore = useAuthStore()
+  const authStore = useAuthStore() || null;
 
   const apiClient: AxiosInstance = axios.create({
     baseURL: config.public.apiBase,

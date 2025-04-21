@@ -46,7 +46,7 @@
                 <!-- Rasm -->
                 <div class="mt-2">
                     <div class="rounded-md w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <img v-if="user.photo" :src="user.photo" alt="Image" class="object-cover w-full h-full" />
+                        <img v-if="user.photo" :src="config.public.apiImgUrl + user.photo" alt="Image" class="object-cover w-full h-full" />
                         <div v-else class="text-gray-400 text-sm">Rasm yo‘q</div>
                     </div>
                 </div>
@@ -137,9 +137,11 @@
 import { z } from "zod"
 import { ref, watch } from 'vue'
 import { formData } from "~/utils"
-const { request } = useApi()
+const { request } = useApi();
 const loading = ref(false)
 const search = ref('')
+const config = useRuntimeConfig()
+
 const users = ref({
     page: 1,
     page_size: 12,

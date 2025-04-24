@@ -241,7 +241,9 @@ const openEditModal = (user) => {
     }
     isEditModalOpen.value = true
 }
-
+watch(() => users.value.page, () => {
+    getUserList();
+});
 </script>
 
 <style lang="scss" scoped></style>

@@ -366,5 +366,7 @@ async function photoSubmit(event) {
 
 
 }
-
+watch(() => articles.value.page, () => {
+    getAll();
+});
 </script>

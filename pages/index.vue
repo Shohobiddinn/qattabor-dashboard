@@ -23,7 +23,8 @@
       <UCard v-for="category in categories.data" :key="category.id">
         <template #header>
           <div class="flex justify-between items-center">
-            <span class="text-lg font-semibold truncate">{{ category?.title }}</span>
+            <span class="text-lg font-semibold truncate">{{ category?.title?.uz }}</span>
+            <span class="text-lg font-semibold truncate">{{ category?.title?.ru }}</span>
 
             <!-- Popover menyu -->
             <UPopover :popper="{ placement: 'bottom-end' }">
@@ -52,7 +53,8 @@
         </div>
 
         <!-- Kategoriya tavsifi -->
-        <p class="text-sm text-gray-600">{{ category.description || 'Tavsif yo‘q' }}</p>
+        <p class="text-sm text-gray-600">{{ category.description?.uz || 'Tavsif yo‘q' }}</p>
+        <p class="text-sm text-gray-600">{{ category.description?.ru || 'Tavsif yo‘q' }}</p>
 
 
 
@@ -82,21 +84,27 @@
       <UCard>
         <template #header>Kategoriya qo‘shish</template>
         <UForm :state="newCategory" :schema="schema" @submit="createCategory">
-          <UFormGroup name="title" label="Kategoriya nomi">
-            <UInput v-model="newCategory.title" placeholder="Kategoriya nomi" />
+          <UFormGroup name="title.uz" label="Kategoriya nomi uz">
+            <UInput v-model="newCategory.title.uz" placeholder="Kategoriya nomi" />
+          </UFormGroup>
+          <UFormGroup name="title.ru" label="Kategoriya nomi ru">
+            <UInput v-model="newCategory.title.ru" placeholder="Kategoriya nomi" />
           </UFormGroup>
 
           <UFormGroup name="photo" label="Kategoriya rasmi">
             <input type="file" required accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
+          file:mr-4 file:py-2 file:px-4
+          file:rounded-full file:border-0
+          file:text-sm file:font-semibold
+          file:bg-blue-50 file:text-blue-700
+          hover:file:bg-blue-100" />
           </UFormGroup>
 
-          <UFormGroup name="description" label="Tavsif">
-            <UTextarea v-model="newCategory.description" placeholder="Tavsif" />
+          <UFormGroup name="description.uz" label="Tavsif uz">
+            <UTextarea v-model="newCategory.description.uz" placeholder="Tavsif" />
+          </UFormGroup>
+          <UFormGroup name="description.ru" label="Tavsif ru">
+            <UTextarea v-model="newCategory.description.ru" placeholder="Tavsif" />
           </UFormGroup>
 
           <UButton type="submit" color="primary" block>
@@ -104,15 +112,20 @@
           </UButton>
         </UForm>
       </UCard>
+
     </UModal>
     <!-- Tahrirlash modal -->
     <UModal v-model="isEditModalOpen">
       <UCard>
         <template #header>Kategoriyani tahrirlash</template>
         <UForm :state="editCategory" :schema="editSchema" @submit="saveCategory">
-          <UFormGroup name="title" label="Kategoriya nomi">
-            <UInput v-model="editCategory.title" placeholder="Kategoriya nomi" />
+          <UFormGroup name="title.uz" label="Kategoriya nomi uz">
+            <UInput v-model="editCategory.title.uz" placeholder="Kategoriya nomi" />
           </UFormGroup>
+          <UFormGroup name="title.ru" label="Kategoriya nomi ru">
+            <UInput v-model="editCategory.title.ru" placeholder="Kategoriya nomi" />
+          </UFormGroup>
+
 
           <UFormGroup name="photo" label="Kategoriya rasmi">
             <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
@@ -123,10 +136,12 @@
                hover:file:bg-blue-100" />
           </UFormGroup>
 
-          <UFormGroup name="description" label="Tavsif">
-            <UTextarea v-model="editCategory.description" placeholder="Tavsif" />
+          <UFormGroup name="description.uz" label="Tavsif uz">
+            <UTextarea v-model="editCategory.description.uz" placeholder="Tavsif" />
           </UFormGroup>
-
+          <UFormGroup name="description.ru" label="Tavsif ru">
+            <UTextarea v-model="editCategory.description.ru" placeholder="Tavsif" />
+          </UFormGroup>
           <UButton type="submit" color="primary" block>
             Saqlash
           </UButton>
@@ -173,13 +188,25 @@ const isEditModalOpen = ref(false)
 
 const newCategory = ref({
   parent_id: 0,
-  title: '',
-  description: '',
+  title: {
+    uz: '',
+    ru: '',
+  },
+  description: {
+    uz: '',
+    ru: '',
+  },
   photo: null,
 })
 const schema = z.object({
-  title: z.string().min(1, 'Kategoriya nomi majburiy'),
-  description: z.string().min(1, 'Tavsif majburiy'),
+  title: z.object({
+    uz: z.string().min(1, 'Kategoriya nomi (uz) majburiy'),
+    ru: z.string().min(1, 'Kategoriya nomi (ru) majburiy')
+  }),
+  description: z.object({
+    uz: z.string().min(1, 'Tavsif (uz) majburiy'),
+    ru: z.string().min(1, 'Tavsif (ru) majburiy')
+  }),
   photo: z
     .any()
     .optional()
@@ -188,15 +215,28 @@ const schema = z.object({
       'Faqat rasm fayli tanlang'
     )
 })
+
 const editSchema = z.object({
-  title: z.string().min(1, 'Kategoriya nomi majburiy'),
-  description: z.string().min(1, 'Tavsif majburiy'),
+  title: z.object({
+    uz: z.string().min(1, 'Kategoriya nomi (uz) majburiy'),
+    ru: z.string().min(1, 'Kategoriya nomi (ru) majburiy')
+  }),
+  description: z.object({
+    uz: z.string().min(1, 'Tavsif (uz) majburiy'),
+    ru: z.string().min(1, 'Tavsif (ru) majburiy')
+  }),
 })
 const editCategory = ref({
   slug: '',
   parent_id: 0,
-  title: '',
-  description: '',
+  title: {
+    uz: '',
+    ru: '',
+  },
+  description: {
+    uz: '',
+    ru: '',
+  },
   photo: null,
 })
 function photoSubmit(event) {
@@ -211,16 +251,11 @@ function photoSubmit(event) {
 
 const createCategory = async () => {
   try {
-    const id = Date.now()
-    categories.value.data.push({
-      id,
-      title: newCategory.value.name,
-      description: newCategory.value.description,
-      createdAt: new Date().toISOString().slice(0, 10)
-    })
-
     const { data, error, refresh } = await request(`/category/create`, 'post', formData(newCategory.value))
+    if (!error) {
+      getCaregory();
 
+    }
     newCategory.value = {
       parent_id: 0,
       title: '',
@@ -234,7 +269,7 @@ const createCategory = async () => {
 }
 
 const openEditModal = (category) => {
-  editCategory.value = { ...category }
+  editCategory.value = { ...category };
   isEditModalOpen.value = true
 }
 

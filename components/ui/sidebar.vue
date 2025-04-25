@@ -40,7 +40,7 @@ const items = [
   { to: '/', icon: 'i-heroicons-home', label: 'Kategoriyalar' },
   { to: '/users', icon: 'i-heroicons-users', label: 'Hodimlar' },
   { to: '/regions', icon: 'i-heroicons-map-pin', label: 'Hududlar' },
-  { to: '/advertisement', icon: 'i-heroicons--camera', label: 'Reklamalar' }
-  
+  { to: '/advertisement', icon: 'material-symbols:photo-camera', label: 'Reklamalar' },
+  { to: '/feedbacks', icon: 'iconoir:arrow-down-left-circle-solid', label: 'Fikrlar' }
 ]
 </script>

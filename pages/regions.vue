@@ -61,7 +61,10 @@
                 <UCard>
                     <template #header>Hudud qo‘shish</template>
                     <UForm :state="newRegion" :schema="regionCreateSchema" @submit="createRegion">
-                        <UFormGroup name="title" label="Hudud nomi">
+                        <UFormGroup name="title.uz" label="Hudud nomi (uz)">
+                            <UInput v-model="newRegion.title" placeholder="Hudud nomi" />
+                        </UFormGroup>
+                        <UFormGroup name="title.ru" label="Hudud nomi (ru)">
                             <UInput v-model="newRegion.title" placeholder="Hudud nomi" />
                         </UFormGroup>
                         <UFormGroup name="latitude" label="Kenglik">
@@ -83,7 +86,10 @@
                 <UCard>
                     <template #header>Hududni tahrirlash</template>
                     <UForm :state="editRegion" :schema="regionCreateSchema" @submit="saveRegion">
-                        <UFormGroup name="title" label="Hudud nomi">
+                        <UFormGroup name="title.uz" label="Hudud nomi (uz)">
+                            <UInput v-model="editRegion.title" placeholder="Hudud nomi" />
+                        </UFormGroup>
+                           <UFormGroup name="title.ru" label="Hudud nomi (ru)">
                             <UInput v-model="editRegion.title" placeholder="Hudud nomi" />
                         </UFormGroup>
                         <UFormGroup name="latitude" label="Kenglik">
@@ -142,7 +148,10 @@ const isEditModalOpen = ref(false)
 
 const newRegion = ref({
     parent_id: 0,
-    title: "",
+    title: {
+        uz:'',
+        ru:''
+    },
     latitude: 0,
     longitude: 0
 })

@@ -41,7 +41,8 @@
                     </template>
 
                     <div class="mt-2">
-                        <h2>{{ region?.title }}</h2>
+                        <h2>{{ region?.title?.uz }}</h2>
+                        <h2>{{ region?.title?.ru }}</h2>
                         <div>
                             <span>{{ region?.latitude }}</span> - <span>{{ region?.longitude }}</span>
                         </div>
@@ -62,10 +63,10 @@
                     <template #header>Hudud qo‘shish</template>
                     <UForm :state="newRegion" :schema="regionCreateSchema" @submit="createRegion">
                         <UFormGroup name="title.uz" label="Hudud nomi (uz)">
-                            <UInput v-model="newRegion.title" placeholder="Hudud nomi" />
+                            <UInput v-model="newRegion.title.uz" placeholder="Hudud nomi" />
                         </UFormGroup>
                         <UFormGroup name="title.ru" label="Hudud nomi (ru)">
-                            <UInput v-model="newRegion.title" placeholder="Hudud nomi" />
+                            <UInput v-model="newRegion.title.ru" placeholder="Hudud nomi" />
                         </UFormGroup>
                         <UFormGroup name="latitude" label="Kenglik">
                             <UInput v-model="newRegion.latitude" placeholder="Kenglik" />
@@ -87,10 +88,10 @@
                     <template #header>Hududni tahrirlash</template>
                     <UForm :state="editRegion" :schema="regionCreateSchema" @submit="saveRegion">
                         <UFormGroup name="title.uz" label="Hudud nomi (uz)">
-                            <UInput v-model="editRegion.title" placeholder="Hudud nomi" />
+                            <UInput v-model="editRegion.title.uz" placeholder="Hudud nomi" />
                         </UFormGroup>
                            <UFormGroup name="title.ru" label="Hudud nomi (ru)">
-                            <UInput v-model="editRegion.title" placeholder="Hudud nomi" />
+                            <UInput v-model="editRegion.title.ru" placeholder="Hudud nomi" />
                         </UFormGroup>
                         <UFormGroup name="latitude" label="Kenglik">
                             <UInput v-model="editRegion.latitude" placeholder="Kenglik" />
@@ -214,7 +215,7 @@ const openEditModal = (region) => {
     editRegion.value = { ...region }
     isEditModalOpen.value = true
 }
-watch(regions.page, () => {
+watch(() =>regions.value.page, () => {
     getRegionList();
 })
 </script>

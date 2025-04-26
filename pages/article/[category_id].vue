@@ -96,7 +96,7 @@
 
 
               <UFormGroup name="region_id" label="Hudud">
-                <USelect v-model="form.region_id" :options="regions" option-attribute="title" value-attribute="id"
+                <USelect v-model="form.region_id" :options="regions" option-attribute="title.uz" value-attribute="id"
                   placeholder="Hududdni tanlang" />
               </UFormGroup>
               <UFormGroup name="title" label="Sarlavha">
@@ -367,6 +367,24 @@ async function photoSubmit(event) {
 
 }
 watch(() => articles.value.page, () => {
-    getAll();
+  getAll();
 });
+watch(() => isCreateModalOpen.value, () => {
+  form.value = {
+    author_id: 0,
+    categorie_id: 0,
+    region_id: 0,
+    is_ad: false,
+    title: '',
+    body: '',
+    address: '',
+    phone_number: '',
+    status: false,
+    latitude: 0,
+    longitude: 0,
+    photo: '',
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: new Date().toISOString().split('T')[0],
+  }
+})
 </script>

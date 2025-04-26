@@ -46,7 +46,8 @@
                 <!-- Rasm -->
                 <div class="mt-2">
                     <div class="rounded-md w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <img v-if="user.photo" :src="config.public.apiImgUrl + user.photo" alt="Image" class="object-cover w-full h-full" />
+                        <img v-if="user.photo" :src="config.public.apiImgUrl + user.photo" alt="Image"
+                            class="object-cover w-full h-full" />
                         <div v-else class="text-gray-400 text-sm">Rasm yo‘q</div>
                     </div>
                 </div>
@@ -220,7 +221,6 @@ const saveUser = async () => {
         editUser.value.status = 'true';
         const { data, error, refresh } = await request(`/users/update`, 'put', formData(editUser.value))
         if (error) return;
-
         editUser.value = { name: '', description: '', photo: null }
         isEditModalOpen.value = false
         getUserList();
@@ -244,6 +244,17 @@ const openEditModal = (user) => {
 watch(() => users.value.page, () => {
     getUserList();
 });
+watch(() => isCreateModalOpen.value, () => {
+    newUser.value = {
+        name: '',
+        username: "",
+        password_hash: '',
+        role: 'admin',
+        status: 'actived',
+        description: '',
+        photo: null,
+    }
+})
 </script>
 
 <style lang="scss" scoped></style>

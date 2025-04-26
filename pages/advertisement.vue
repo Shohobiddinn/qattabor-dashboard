@@ -15,8 +15,8 @@
 
         </div>
         <!-- Kategoriyalar ro'yxati -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="ads.data.length && !loading">
-            <UCard v-for="item in ads.data" :key="item.id">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" v-if="ads?.data?.length && !loading">
+            <UCard v-for="item in ads?.data" :key="item.id">
                 <template #header>
                     <div class="flex justify-between items-center">
                         <span class="text-lg font-semibold truncate">{{ item?.title }}</span>
@@ -64,8 +64,8 @@
             </UCard>
 
         </div>
-        <UPagination v-model="ads.page" :page-count="12" :total="ads.total_count" v-if="ads.data.length" />
-        <div v-else-if="!loading && !ads.data.length" class="flex justify-center">
+        <UPagination v-model="ads.page" :page-count="12" :total="ads.total_count" v-if="ads?.data?.length" />
+        <div v-else-if="!loading && !ads?.data?.length" class="flex justify-center">
             <h1>Ma'lumot topilmadi !</h1>
         </div>
     </div>
@@ -142,7 +142,7 @@
 </template>
 
 <script setup>
-import { ref,watch } from 'vue';
+import { ref, watch } from 'vue';
 const { request } = useApi();
 import { adsSchema } from '~/schemas';
 const loading = ref(false);
@@ -176,6 +176,7 @@ const ads = ref({
 async function getAll() {
     loading.value = true;
     const { data, error, refetch } = await request(`/ads?page=${ads.value.page}&page_size=${ads.value.page_size}`)
+    if (error) return;
     ads.value = data
     loading.value = false;
 }
@@ -220,6 +221,18 @@ const openEditModal = (item) => {
 watch(() => ads.value.page, () => {
     getAll();
 });
+watch(() => isCreateModalOpen.value, () => {
+    newAds.value = {
+        title: '',
+        body: '',
+        media_url: null,
+        url: '',
+        start_date: '',
+        expire_date: '',
+        status: "true"
+    }
+})
+
 </script>
 
 <style lang="scss" scoped></style>

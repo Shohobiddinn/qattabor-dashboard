@@ -90,7 +90,7 @@
                         <UFormGroup name="title.uz" label="Hudud nomi (uz)">
                             <UInput v-model="editRegion.title.uz" placeholder="Hudud nomi" />
                         </UFormGroup>
-                           <UFormGroup name="title.ru" label="Hudud nomi (ru)">
+                        <UFormGroup name="title.ru" label="Hudud nomi (ru)">
                             <UInput v-model="editRegion.title.ru" placeholder="Hudud nomi" />
                         </UFormGroup>
                         <UFormGroup name="latitude" label="Kenglik">
@@ -120,12 +120,13 @@ const { request } = useApi()
 onMounted(() => {
     getLocation()
     setTimeout(() => {
-        newRegion.value.latitude = coords.value.latitude
-        newRegion.value.longitude = coords.value.longitude
+        newRegion.value.latitude = coords.value?.latitude
+        newRegion.value.longitude = coords.value?.longitude
 
     }, 2000)
 
 })
+
 const loading = ref(false)
 const search = ref('')
 const regions = ref({
@@ -150,8 +151,8 @@ const isEditModalOpen = ref(false)
 const newRegion = ref({
     parent_id: 0,
     title: {
-        uz:'',
-        ru:''
+        uz: '',
+        ru: ''
     },
     latitude: 0,
     longitude: 0
@@ -215,8 +216,20 @@ const openEditModal = (region) => {
     editRegion.value = { ...region }
     isEditModalOpen.value = true
 }
-watch(() =>regions.value.page, () => {
+watch(() => regions.value.page, () => {
     getRegionList();
+})
+watch(() => isCreateModalOpen.value, () => {
+     newRegion.value = {
+        parent_id: 0,
+        title: {
+            uz: '',
+            ru: ''
+        },
+        latitude: newRegion.value.latitude,
+        longitude: newRegion.value.longitude
+    }
+
 })
 </script>
 

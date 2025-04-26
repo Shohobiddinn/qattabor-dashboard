@@ -181,10 +181,23 @@ getCaregory();
 watch(() => categories.value.page, () => {
   getCaregory();
 });
-
-
 const isCreateModalOpen = ref(false)
 const isEditModalOpen = ref(false)
+
+watch(() => isCreateModalOpen.value, () => {
+  newCategory.value = {
+    parent_id: 0,
+    title: {
+      uz: '',
+      ru: '',
+    },
+    description: {
+      uz: '',
+      ru: '',
+    },
+    photo: null,
+  }
+})
 
 const newCategory = ref({
   parent_id: 0,
@@ -258,8 +271,14 @@ const createCategory = async () => {
     }
     newCategory.value = {
       parent_id: 0,
-      title: '',
-      description: '',
+      title: {
+        uz: '',
+        ru: '',
+      },
+      description: {
+        uz: '',
+        ru: '',
+      },
       photo: null,
     }
     isCreateModalOpen.value = false
@@ -279,9 +298,16 @@ const saveCategory = async () => {
     const { data, error, refresh } = await request(`/category/upd`, 'put', formData(editCategory.value))
     getCaregory();
     editCategory.value = {
+      slug: '',
       parent_id: 0,
-      title: '',
-      description: '',
+      title: {
+        uz: '',
+        ru: '',
+      },
+      description: {
+        uz: '',
+        ru: '',
+      },
       photo: null,
     }
     isEditModalOpen.value = false

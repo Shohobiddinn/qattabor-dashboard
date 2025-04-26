@@ -20,7 +20,8 @@
       <UCard v-for="hotel in articles.data" :key="hotel.id">
         <template #header>
           <div class="flex justify-between items-center">
-            <span class="text-lg font-semibold truncate">{{ hotel.title }}</span>
+            <span class="text-lg font-semibold truncate">{{ hotel.title.uz }}</span>
+            <span class="text-lg font-semibold truncate">{{ hotel.title.ru }}</span>
             <UPopover :popper="{ placement: 'bottom-end' }">
               <UButton icon="i-heroicons-ellipsis-horizontal" color="gray" variant="ghost" />
               <template #panel>
@@ -49,14 +50,15 @@
           </div>
 
           <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <h2 class="text-xl font-semibold">{{ hotel.title }}</h2>
-            </div>
 
-            <p class="text-gray-600 mb-2">{{ hotel.body }}</p>
+
+            <p class="text-gray-600 mb-2">{{ hotel.body.uz }}</p>
+            <p class="text-gray-600 mb-2">{{ hotel.body.ru }}</p>
 
             <div class="text-sm text-gray-500 mb-1">
-              📍 {{ hotel.address }}
+              📍 {{ hotel.address.uz }} <br>
+              📍 {{ hotel.address.ru }}
+
             </div>
             <div class="text-sm text-gray-500 mb-1">
               📞 +{{ hotel.phone_number }}
@@ -99,8 +101,13 @@
                 <USelect v-model="form.region_id" :options="regions" option-attribute="title.uz" value-attribute="id"
                   placeholder="Hududdni tanlang" />
               </UFormGroup>
-              <UFormGroup name="title" label="Sarlavha">
-                <UInput v-model="form.title" placeholder="Sarlavha" />
+              <UFormGroup name="title.uz" label="Sarlavha (uz)">
+                <UInput v-model="form.title.uz" placeholder="Sarlavha" />
+              </UFormGroup>
+              <pre>{{ form.title.uz }}</pre>
+
+              <UFormGroup name="title.uz" label="Sarlavha (ru)">
+                <UInput v-model="form.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
               <UFormGroup name="is_ad" label="Reklama holati">
                 <UToggle v-model="form.is_ad" />
@@ -116,10 +123,12 @@
 
             </div>
             <div class="w-full">
-              <UFormGroup name="address" label="Manzil">
-                <UInput v-model="form.address" placeholder="Manzil" />
+              <UFormGroup name="address.uz" label="Manzil (uz)">
+                <UInput v-model="form.address.uz" placeholder="Manzil" />
               </UFormGroup>
-
+              <UFormGroup name="address.ru" label="Manzil (ru)">
+                <UInput v-model="form.address.ru" placeholder="Manzil" />
+              </UFormGroup>
 
               <UFormGroup name="phone_number" label="Telefon raqam">
                 <UInput v-model="form.phone_number" placeholder="Telefon raqam" type="text" />
@@ -136,10 +145,16 @@
               </UFormGroup>
             </div>
           </div>
-          <UFormGroup name="body" label="Tavsif">
-            <UTextarea v-model="form.body" placeholder="E'lon matni" />
-          </UFormGroup>
 
+          <UFormGroup name="owner_id" label="Telegram ID">
+            <UInput v-model="form.owner_id" type="number" placeholder="Telegram ID" />
+          </UFormGroup>
+          <UFormGroup name="body.uz" label="Tavsif (uz)">
+            <UTextarea v-model="form.body.uz" placeholder="E'lon matni" />
+          </UFormGroup>
+          <UFormGroup name="body.ru" label="Tavsif (ru)">
+            <UTextarea v-model="form.body.ru" placeholder="E'lon matni" />
+          </UFormGroup>
 
 
           <UButton type="submit" color="primary" block>
@@ -167,11 +182,14 @@
 
 
               <UFormGroup name="region_id" label="Hudud">
-                <USelect v-model="editArticle.region_id" :options="regions" option-attribute="title"
+                <USelect v-model="editArticle.region_id" :options="regions" option-attribute="title.uz"
                   value-attribute="id" placeholder="Hududdni tanlang" />
               </UFormGroup>
-              <UFormGroup name="title" label="Sarlavha">
-                <UInput v-model="editArticle.title" placeholder="Sarlavha" />
+              <UFormGroup name="title.uz" label="Sarlavha (uz)">
+                <UInput v-model="editArticle.title.uz" placeholder="Sarlavha" />
+              </UFormGroup>
+              <UFormGroup name="title.ru" label="Sarlavha (ru)">
+                <UInput v-model="editArticle.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
               <UFormGroup name="is_ad" label="Reklama holati">
                 <UToggle v-model="editArticle.is_ad" />
@@ -187,8 +205,11 @@
 
             </div>
             <div class="w-full">
-              <UFormGroup name="address" label="Manzil">
-                <UInput v-model="editArticle.address" placeholder="Manzil" />
+              <UFormGroup name="address.uz" label="Manzil (uz)">
+                <UInput v-model="editArticle.address.uz" placeholder="Manzil" />
+              </UFormGroup>
+              <UFormGroup name="address.ru" label="Manzil (ru)">
+                <UInput v-model="editArticle.address.ru" placeholder="Manzil" />
               </UFormGroup>
 
 
@@ -207,8 +228,14 @@
               </UFormGroup>
             </div>
           </div>
-          <UFormGroup name="body" label="Tavsif">
-            <UTextarea v-model="editArticle.body" placeholder="E'lon matni" />
+          <UFormGroup name="owner_id" label="Telegram ID">
+            <UInput v-model="editArticle.owner_id" type="number" placeholder="Telegram ID" />
+          </UFormGroup>
+          <UFormGroup name="body.uz" label="Tavsif (uz)">
+            <UTextarea v-model="editArticle.body.uz" placeholder="E'lon matni" />
+          </UFormGroup>
+          <UFormGroup name="body.ru" label="Tavsif (ru)">
+            <UTextarea v-model="editArticle.body.ru" placeholder="E'lon matni" />
           </UFormGroup>
 
 
@@ -276,14 +303,24 @@ const editArticle = ref({
   categorie_id: 0,
   region_id: 0,
   is_ad: false,
-  title: "",
-  body: "",
-  address: "",
+  title: {
+    uz: '',
+    ru: ''
+  },
+  body: {
+    uz: '',
+    ru: ''
+  },
+  address: {
+    uz: '',
+    ru: ''
+  },
   phone_number: 0,
   latitude: 0,
   longitude: 0,
   start_date: "",
-  end_date: ""
+  end_date: "",
+  owner_id: null,
 })
 async function getAll() {
   try {
@@ -330,9 +367,18 @@ const form = ref({
   categorie_id: 0,
   region_id: 0,
   is_ad: false,
-  title: '',
-  body: '',
-  address: '',
+  title: {
+    uz: '',
+    ru: ''
+  },
+  body: {
+    uz: '',
+    ru: ''
+  },
+  address: {
+    uz: '',
+    ru: ''
+  },
   phone_number: '',
   status: false,
   latitude: 0,
@@ -340,6 +386,8 @@ const form = ref({
   photo: '',
   start_date: new Date().toISOString().split('T')[0],
   end_date: new Date().toISOString().split('T')[0],
+  owner_id: null,
+
 })
 const regions = ref([]);
 async function submitForm() {
@@ -375,9 +423,18 @@ watch(() => isCreateModalOpen.value, () => {
     categorie_id: 0,
     region_id: 0,
     is_ad: false,
-    title: '',
-    body: '',
-    address: '',
+    title: {
+      uz: '',
+      ru: ''
+    },
+    body: {
+      uz: '',
+      ru: ''
+    },
+    address: {
+      uz: '',
+      ru: ''
+    },
     phone_number: '',
     status: false,
     latitude: 0,
@@ -385,6 +442,8 @@ watch(() => isCreateModalOpen.value, () => {
     photo: '',
     start_date: new Date().toISOString().split('T')[0],
     end_date: new Date().toISOString().split('T')[0],
+    owner_id: null,
+
   }
 })
 </script>

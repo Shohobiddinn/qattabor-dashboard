@@ -32,7 +32,7 @@ const deleteFeedback = async (item) => {
     }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-            const { data, error } = request(`/feedbacks/delete?article_id=${item.article_id}&id=${item.id}`);
+            const { data, error } = request(`/feedbacks/delete?id=${item.id}`,'delete');
             if (!error) {
                 getAll();
             }

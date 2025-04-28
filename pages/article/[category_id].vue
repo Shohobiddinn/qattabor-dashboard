@@ -156,7 +156,15 @@
             <UTextarea v-model="form.body.ru" placeholder="E'lon matni" />
           </UFormGroup>
 
-
+          <UFormGroup label="Xizmat">
+            <UTextarea v-model="form.services" placeholder="Xizmatlar" />
+          </UFormGroup>
+          <UFormGroup label="Hashtag">
+            <UTextarea v-model="form.hashtags" placeholder="Hashtag" />
+          </UFormGroup>
+          <UFormGroup label="Ijtimoiy tarmoqlar">
+            <UTextarea v-model="form.social_media" placeholder="Ijtimoiy tarmoqlar" />
+          </UFormGroup>
           <UButton type="submit" color="primary" block>
             Yuborish
           </UButton>
@@ -237,7 +245,15 @@
           <UFormGroup name="body.ru" label="Tavsif (ru)">
             <UTextarea v-model="editArticle.body.ru" placeholder="E'lon matni" />
           </UFormGroup>
-
+          <UFormGroup label="Xizmat">
+            <UTextarea v-model="editArticle.services" placeholder="Xizmatlar" />
+          </UFormGroup>
+          <UFormGroup label="Hashtag">
+            <UTextarea v-model="editArticle.hashtags" placeholder="Hashtag" />
+          </UFormGroup>
+          <UFormGroup label="Ijtimoiy tarmoqlar">
+            <UTextarea v-model="editArticle.social_media" placeholder="Ijtimoiy tarmoqlar" />
+          </UFormGroup>
 
 
           <UButton type="submit" color="primary" block>
@@ -321,6 +337,9 @@ const editArticle = ref({
   start_date: "",
   end_date: "",
   owner_id: null,
+  services: '',
+  social_media: '',
+  hashtags: ''
 })
 async function getAll() {
   try {
@@ -387,7 +406,9 @@ const form = ref({
   start_date: new Date().toISOString().split('T')[0],
   end_date: new Date().toISOString().split('T')[0],
   owner_id: null,
-
+  services: '',
+  social_media: '',
+  hashtags: ''
 })
 const regions = ref([]);
 async function submitForm() {
@@ -396,6 +417,7 @@ async function submitForm() {
     categorie_id: categoryId,
     slug: ''
   }
+  postForm.hashtags = postForm.hashtags.split(',')
   const { data, error, refresh } = await request(`/articles/create`, 'post', postForm)
   if (error) return;
   getAll();
@@ -443,7 +465,9 @@ watch(() => isCreateModalOpen.value, () => {
     start_date: new Date().toISOString().split('T')[0],
     end_date: new Date().toISOString().split('T')[0],
     owner_id: null,
-
+    services: '',
+    social_media: '',
+    hashtags: ''
   }
 })
 </script>

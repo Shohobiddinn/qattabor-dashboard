@@ -20,8 +20,10 @@
       <UCard v-for="hotel in articles.data" :key="hotel.id">
         <template #header>
           <div class="flex justify-between items-center">
-            <span class="text-lg font-semibold truncate">{{ hotel.title.uz }}</span>
-            <span class="text-lg font-semibold truncate">{{ hotel.title.ru }}</span>
+            <div>
+              <span class="text-lg font-semibold truncate">{{ hotel.title.uz }}</span> <br>
+              <span class="text-lg font-semibold truncate">{{ hotel.title.ru }}</span>
+            </div>
             <UPopover :popper="{ placement: 'bottom-end' }">
               <UButton icon="i-heroicons-ellipsis-horizontal" color="gray" variant="ghost" />
               <template #panel>

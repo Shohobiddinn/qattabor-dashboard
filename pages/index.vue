@@ -23,8 +23,10 @@
       <UCard v-for="category in categories.data" :key="category.id">
         <template #header>
           <div class="flex justify-between items-center">
-            <span class="text-lg font-semibold truncate">{{ category?.title?.uz }}</span>
-            <span class="text-lg font-semibold truncate">{{ category?.title?.ru }}</span>
+            <div>
+              <span class="text-lg font-semibold truncate">{{ category?.title?.uz }}</span> <br>
+              <span class="text-lg font-semibold truncate">{{ category?.title?.ru }}</span>
+            </div>
 
             <!-- Popover menyu -->
             <UPopover :popper="{ placement: 'bottom-end' }">

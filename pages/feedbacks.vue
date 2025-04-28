@@ -60,7 +60,7 @@ watch(() => feedbacks.value.page, () => {
                 <tr v-for="(item, index) in feedbacks.data" :key="index">
                     <th>{{ index + 1 }}</th>
                     <th>{{ item?.feedback }}</th>
-                    <th>{{ item?.star_count }}</th>
+                    <th>⭐ {{ item?.star_count }}</th>
                     <th>
                         <UButton @click="deleteFeedback(item)" color="red"
                             icon="material-symbols:restore-from-trash-outline"></UButton>

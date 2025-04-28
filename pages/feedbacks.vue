@@ -71,7 +71,7 @@ watch(() => feedbacks.value.page, () => {
         </table>
         <UPagination v-model="feedbacks.page" :page-count="12" :total="feedbacks.total_count" />
     </div>
-    <div>
+    <div  v-if="!feedbacks?.data?.length">
         <h2 class="text-center"> Ma'lumot topilmadi !</h2>
     </div>
 </template>

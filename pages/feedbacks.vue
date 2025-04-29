@@ -16,8 +16,9 @@ const feedbacks = ref({
     page: 1,
     page_size: 12
 })
+const search = ref('')
 async function getAll() {
-    const { data, error } = await request(`/feedbacks/all?page=${feedbacks.value.page}&page_size=${feedbacks.value.page_size}`,);
+    const { data, error } = await request(`/feedbacks/all?page=${feedbacks.value.page}&page_size=${feedbacks.value.page_size}&feedback=${search.value}`,);
     feedbacks.value = data;
 
 }
@@ -32,7 +33,7 @@ const deleteFeedback = async (item) => {
     }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-            const { data, error } = request(`/feedbacks/delete?id=${item.id}`,'delete');
+            const { data, error } = request(`/feedbacks/delete?id=${item.id}`, 'delete');
             if (!error) {
                 getAll();
             }
@@ -46,6 +47,15 @@ watch(() => feedbacks.value.page, () => {
 </script>
 
 <template>
+    <div class="flex justify-between">
+        <div></div>
+        <div class="flex">
+            <UInput v-model="search" type="search" @input="getAll" placeholder="Qidiruv..."
+                class="w-full sm:w-auto flex-1" />
+            <UButton  icon="hugeicons:search-02" @click="getAll" class="w-full sm:w-auto" />
+
+        </div>
+    </div>
     <div class="p-4 max-w-4xl mx-auto" v-if="feedbacks?.data?.length">
         <table class="w-full" v-if="feedbacks?.data?.length">
             <thead>
@@ -71,7 +81,7 @@ watch(() => feedbacks.value.page, () => {
         </table>
         <UPagination v-model="feedbacks.page" :page-count="12" :total="feedbacks.total_count" />
     </div>
-    <div  v-if="!feedbacks?.data?.length">
+    <div v-if="!feedbacks?.data?.length">
         <h2 class="text-center"> Ma'lumot topilmadi !</h2>
     </div>
 </template>

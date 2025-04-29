@@ -83,9 +83,24 @@
     <div v-else class="text-center text-gray-500">Hozircha maqolalar yo‘q.</div>
 
     <!-- Qo‘shish modal -->
-    <UModal v-model="isCreateModalOpen">
-      <UCard>
-        <template #header>Manzil qo‘shish</template>
+    <UModal v-model="isCreateModalOpen" fullscreen>
+      <UCard :ui="{
+        base: 'h-full flex flex-col',
+        rounded: '',
+        divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+        body: {
+          base: 'grow'
+        }
+      }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+              Manzil qo‘shish
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
+              @click="isCreateModalOpen = false" />
+          </div>
+        </template>
         <UForm :state="form" :schema="articleSchema" @submit="submitForm" class="space-y-4">
           <UFormGroup name="photo" label="Rasm">
             <input required type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
@@ -111,9 +126,14 @@
               <UFormGroup name="title.uz" label="Sarlavha (ru)">
                 <UInput v-model="form.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
-              <UFormGroup name="is_ad" label="Reklama holati">
-                <UToggle v-model="form.is_ad" />
-              </UFormGroup>
+              <div class="flex justify-between">
+                <UFormGroup name="is_ad" label="Reklama holati">
+                  <UToggle v-model="form.is_ad" />
+                </UFormGroup>
+                <UFormGroup name="is_popular" label="Mashxur">
+                  <UToggle v-model="form.is_popular" />
+                </UFormGroup>
+              </div>
               <UFormGroup name="start_date" label="Boshlanish sanasi">
                 <UInput v-model="form.start_date" type="date" />
               </UFormGroup>
@@ -147,26 +167,34 @@
               </UFormGroup>
             </div>
           </div>
+          <div class="flex max-sm:flex-wrap gap-2">
+            <div class="w-full">
+              <UFormGroup name="owner_id" label="Telegram ID">
+                <UInput v-model="form.owner_id" type="number" placeholder="Telegram ID" />
+              </UFormGroup>
+              <UFormGroup name="body.uz" label="Tavsif (uz)">
+                <UTextarea v-model="form.body.uz" placeholder="E'lon matni" />
+              </UFormGroup>
+              <UFormGroup name="body.ru" label="Tavsif (ru)">
+                <UTextarea v-model="form.body.ru" placeholder="E'lon matni" />
+              </UFormGroup>
+            </div>
+            <div class="w-full">
+              <UFormGroup label="Xizmat">
+                <UTextarea v-model="form.services" placeholder="Xizmatlar" />
+              </UFormGroup>
+              <UFormGroup label="Hashtag">
+                <UTextarea v-model="form.hashtags" placeholder="Hashtag" />
+              </UFormGroup>
+              <UFormGroup label="Ijtimoiy tarmoqlar">
+                <UTextarea v-model="form.social_media" placeholder="Ijtimoiy tarmoqlar" />
+              </UFormGroup>
+            </div>
 
-          <UFormGroup name="owner_id" label="Telegram ID">
-            <UInput v-model="form.owner_id" type="number" placeholder="Telegram ID" />
-          </UFormGroup>
-          <UFormGroup name="body.uz" label="Tavsif (uz)">
-            <UTextarea v-model="form.body.uz" placeholder="E'lon matni" />
-          </UFormGroup>
-          <UFormGroup name="body.ru" label="Tavsif (ru)">
-            <UTextarea v-model="form.body.ru" placeholder="E'lon matni" />
-          </UFormGroup>
+          </div>
 
-          <UFormGroup label="Xizmat">
-            <UTextarea v-model="form.services" placeholder="Xizmatlar" />
-          </UFormGroup>
-          <UFormGroup label="Hashtag">
-            <UTextarea v-model="form.hashtags" placeholder="Hashtag" />
-          </UFormGroup>
-          <UFormGroup label="Ijtimoiy tarmoqlar">
-            <UTextarea v-model="form.social_media" placeholder="Ijtimoiy tarmoqlar" />
-          </UFormGroup>
+
+
           <UButton type="submit" color="primary" block>
             Yuborish
           </UButton>
@@ -175,9 +203,24 @@
     </UModal>
 
     <!-- Tahrirlash modal -->
-    <UModal v-model="isEditModalOpen">
-      <UCard>
-        <template #header>Maqolani tahrirlash</template>
+    <UModal v-model="isEditModalOpen" fullscreen>
+      <UCard :ui="{
+        base: 'h-full flex flex-col',
+        rounded: '',
+        divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+        body: {
+          base: 'grow'
+        }
+      }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+              Manzilni tahrirlash
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
+              @click="isEditModalOpen = false" />
+          </div>
+        </template>
         <UForm :state="editArticle" :schema="articleSchema" @submit="saveArticle" class="space-y-4">
           <UFormGroup name="photo" label="Rasm">
             <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
@@ -201,9 +244,14 @@
               <UFormGroup name="title.ru" label="Sarlavha (ru)">
                 <UInput v-model="editArticle.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
+            <div class="flex justify-between">
               <UFormGroup name="is_ad" label="Reklama holati">
                 <UToggle v-model="editArticle.is_ad" />
               </UFormGroup>
+              <UFormGroup name="is_popular" label="Mashxur">
+                <UToggle v-model="editArticle.is_popular" />
+              </UFormGroup>
+            </div>
               <UFormGroup name="start_date" label="Boshlanish sanasi">
                 <UInput v-model="editArticle.start_date" type="date" />
               </UFormGroup>
@@ -238,26 +286,30 @@
               </UFormGroup>
             </div>
           </div>
-          <UFormGroup name="owner_id" label="Telegram ID">
-            <UInput v-model="editArticle.owner_id" type="number" placeholder="Telegram ID" />
-          </UFormGroup>
-          <UFormGroup name="body.uz" label="Tavsif (uz)">
-            <UTextarea v-model="editArticle.body.uz" placeholder="E'lon matni" />
-          </UFormGroup>
-          <UFormGroup name="body.ru" label="Tavsif (ru)">
-            <UTextarea v-model="editArticle.body.ru" placeholder="E'lon matni" />
-          </UFormGroup>
-          <UFormGroup label="Xizmat">
-            <UTextarea v-model="editArticle.services" placeholder="Xizmatlar" />
-          </UFormGroup>
-          <UFormGroup label="Hashtag">
-            <UTextarea v-model="editArticle.hashtags" placeholder="Hashtag" />
-          </UFormGroup>
-          <UFormGroup label="Ijtimoiy tarmoqlar">
-            <UTextarea v-model="editArticle.social_media" placeholder="Ijtimoiy tarmoqlar" />
-          </UFormGroup>
-
-
+          <div class="flex max-sm:flex-wrap gap-2">
+            <div class="w-full">
+              <UFormGroup name="owner_id" label="Telegram ID">
+                <UInput v-model="editArticle.owner_id" type="number" placeholder="Telegram ID" />
+              </UFormGroup>
+              <UFormGroup name="body.uz" label="Tavsif (uz)">
+                <UTextarea v-model="editArticle.body.uz" placeholder="E'lon matni" />
+              </UFormGroup>
+              <UFormGroup name="body.ru" label="Tavsif (ru)">
+                <UTextarea v-model="editArticle.body.ru" placeholder="E'lon matni" />
+              </UFormGroup>
+            </div>
+            <div class="w-full">
+              <UFormGroup label="Xizmat">
+                <UTextarea v-model="editArticle.services" placeholder="Xizmatlar" />
+              </UFormGroup>
+              <UFormGroup label="Hashtag">
+                <UTextarea v-model="editArticle.hashtags" placeholder="Hashtag" />
+              </UFormGroup>
+              <UFormGroup label="Ijtimoiy tarmoqlar">
+                <UTextarea v-model="editArticle.social_media" placeholder="Ijtimoiy tarmoqlar" />
+              </UFormGroup>
+            </div>
+          </div>
           <UButton type="submit" color="primary" block>
             Yuborish
           </UButton>
@@ -313,8 +365,6 @@ const { request } = useApi()
 
 const isCreateModalOpen = ref(false)
 const isEditModalOpen = ref(false)
-
-const newArticle = ref({ title: '', content: '' })
 const editArticle = ref({
   id: 0,
   author_id: 0,
@@ -341,7 +391,9 @@ const editArticle = ref({
   owner_id: null,
   services: '',
   social_media: '',
-  hashtags: ''
+  hashtags: '',
+  is_popular: false
+
 })
 async function getAll() {
   try {
@@ -410,7 +462,8 @@ const form = ref({
   owner_id: null,
   services: '',
   social_media: '',
-  hashtags: ''
+  hashtags: '',
+  is_popular: false
 })
 const regions = ref([]);
 async function submitForm() {
@@ -469,7 +522,8 @@ watch(() => isCreateModalOpen.value, () => {
     owner_id: null,
     services: '',
     social_media: '',
-    hashtags: ''
+    hashtags: '',
+    is_popular: false
   }
 })
 </script>

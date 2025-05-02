@@ -102,7 +102,7 @@
           </div>
         </template>
         <UForm :state="form" :schema="articleSchema" @submit="submitForm" class="space-y-4">
-          <UFormGroup name="photo" label="Muqova">
+          <UFormGroup name="photo" label="Muqova [200px : 100px]">
             <input required type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
@@ -112,7 +112,7 @@
           </UFormGroup>
           <div class="max-h-[200px] overflow-auto">
             <div class="flex justify-between items-center" v-for="(item, index) in images" :key="index">
-              <UFormGroup label="Rasm">
+              <UFormGroup label="Rasm [200px : 100px]">
                 <input required type="file" accept="image/*" @change="bannerSubmit($event, index)" class="block w-full text-sm text-gray-500
                  file:mr-4 file:py-2 file:px-4
                  file:rounded-full file:border-0
@@ -205,7 +205,7 @@
                   :options="[{ name: 'Media', status: true }, { name: 'Xizmat', status: false }]"
                   option-attribute="name" value-attribute="status" placeholder="Xizmat turi" />
               </UFormGroup>
-              <UFormGroup v-if="statusService == 'true'" label="Menu">
+              <UFormGroup v-if="statusService == 'true'" label="Menu [200px : 100px]">
                 <input required type="file" accept="image/*" @change="menuSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
@@ -255,7 +255,7 @@
           </div>
         </template>
         <UForm :state="editArticle" :schema="articleSchema" @submit="saveArticle" class="space-y-4">
-          <UFormGroup name="photo" label="Rasm">
+          <UFormGroup name="photo" label="Rasm [200px : 100px]">
             <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
@@ -337,7 +337,7 @@
                   :options="[{ name: 'Media', status: true }, { name: 'Xizmat', status: false }]"
                   option-attribute="name" value-attribute="status" placeholder="Xizmat turi" />
               </UFormGroup>
-              <UFormGroup v-if="statusService == 'true'" label="Menu">
+              <UFormGroup v-if="statusService == 'true'" label="Menu [200px : 100px]">
                 <input required type="file" accept="image/*" @change="menuSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0

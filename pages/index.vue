@@ -93,7 +93,7 @@
             <UInput v-model="newCategory.title.ru" placeholder="Kategoriya nomi" />
           </UFormGroup>
 
-          <UFormGroup name="photo" label="Kategoriya rasmi">
+          <UFormGroup name="photo" label="Kategoriya rasmi [200px : 100px]">
             <input type="file" required accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
           file:mr-4 file:py-2 file:px-4
           file:rounded-full file:border-0
@@ -129,7 +129,7 @@
           </UFormGroup>
 
 
-          <UFormGroup name="photo" label="Kategoriya rasmi">
+          <UFormGroup name="photo" label="Kategoriya rasmi [200px : 100px]">
             <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0

@@ -102,7 +102,7 @@
           </div>
         </template>
         <UForm :state="form" :schema="articleSchema" @submit="submitForm" class="space-y-4">
-          <UFormGroup name="photo" label="Rasm">
+          <UFormGroup name="photo" label="Muqova">
             <input required type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
                file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0
@@ -110,10 +110,35 @@
                file:bg-blue-50 file:text-blue-700
                hover:file:bg-blue-100" />
           </UFormGroup>
+          <div class="max-h-[200px] overflow-auto">
+            <div class="flex justify-between items-center" v-for="(item, index) in images" :key="index">
+              <UFormGroup label="Rasm">
+                <input required type="file" accept="image/*" @change="bannerSubmit($event, index)" class="block w-full text-sm text-gray-500
+                 file:mr-4 file:py-2 file:px-4
+                 file:rounded-full file:border-0
+                 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-blue-700
+                 hover:file:bg-blue-100" />
+                <img v-if="item.image" :src="item.image" alt="Image Preview"
+                  class="w-[100px] h-[100px] object-contain" />
+              </UFormGroup>
+              <div>
+                <div class="w-[100px]">
+                  <UButton icon="i-heroicons-minus" color="red" @click="bannerRemove(index)"
+                    v-if="images.length > 1 && false">
+                  </UButton>
+                </div>
+                <div class="w-[100px]">
+                  <UButton icon="i-heroicons-plus" v-if="images.length == index + 1" @click="bannerCreate(index)">
+                  </UButton>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
           <div class="flex max-sm:flex-wrap gap-2">
             <div class="w-full">
-
-
               <UFormGroup name="region_id" label="Hudud">
                 <USelect v-model="form.region_id" :options="regions" option-attribute="title.uz" value-attribute="id"
                   placeholder="Hududdni tanlang" />
@@ -121,8 +146,6 @@
               <UFormGroup name="title.uz" label="Sarlavha (uz)">
                 <UInput v-model="form.title.uz" placeholder="Sarlavha" />
               </UFormGroup>
-              <pre>{{ form.title.uz }}</pre>
-
               <UFormGroup name="title.uz" label="Sarlavha (ru)">
                 <UInput v-model="form.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
@@ -137,12 +160,9 @@
               <UFormGroup name="start_date" label="Boshlanish sanasi">
                 <UInput v-model="form.start_date" type="date" />
               </UFormGroup>
-
               <UFormGroup name="end_date" label="Tugash sanasi">
                 <UInput v-model="form.end_date" type="date" />
               </UFormGroup>
-
-
             </div>
             <div class="w-full">
               <UFormGroup name="address.uz" label="Manzil (uz)">
@@ -180,7 +200,20 @@
               </UFormGroup>
             </div>
             <div class="w-full">
-              <UFormGroup label="Xizmat">
+              <UFormGroup>
+                <USelect v-model="statusService"
+                  :options="[{ name: 'Media', status: true }, { name: 'Xizmat', status: false }]"
+                  option-attribute="name" value-attribute="status" placeholder="Xizmat turi" />
+              </UFormGroup>
+              <UFormGroup v-if="statusService == 'true'" label="Menu">
+                <input required type="file" accept="image/*" @change="menuSubmit($event)" class="block w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-blue-50 file:text-blue-700
+               hover:file:bg-blue-100" />
+              </UFormGroup>
+              <UFormGroup label="Xizmat" v-if="statusService == 'false'">
                 <UTextarea v-model="form.services" placeholder="Xizmatlar" />
               </UFormGroup>
               <UFormGroup label="Hashtag">
@@ -244,14 +277,14 @@
               <UFormGroup name="title.ru" label="Sarlavha (ru)">
                 <UInput v-model="editArticle.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
-            <div class="flex justify-between">
-              <UFormGroup name="is_ad" label="Reklama holati">
-                <UToggle v-model="editArticle.is_ad" />
-              </UFormGroup>
-              <UFormGroup name="is_popular" label="Mashxur">
-                <UToggle v-model="editArticle.is_popular" />
-              </UFormGroup>
-            </div>
+              <div class="flex justify-between">
+                <UFormGroup name="is_ad" label="Reklama holati">
+                  <UToggle v-model="editArticle.is_ad" />
+                </UFormGroup>
+                <UFormGroup name="is_popular" label="Mashxur">
+                  <UToggle v-model="editArticle.is_popular" />
+                </UFormGroup>
+              </div>
               <UFormGroup name="start_date" label="Boshlanish sanasi">
                 <UInput v-model="editArticle.start_date" type="date" />
               </UFormGroup>
@@ -299,7 +332,20 @@
               </UFormGroup>
             </div>
             <div class="w-full">
-              <UFormGroup label="Xizmat">
+              <UFormGroup>
+                <USelect v-model="statusService"
+                  :options="[{ name: 'Media', status: true }, { name: 'Xizmat', status: false }]"
+                  option-attribute="name" value-attribute="status" placeholder="Xizmat turi" />
+              </UFormGroup>
+              <UFormGroup v-if="statusService == 'true'" label="Menu">
+                <input required type="file" accept="image/*" @change="menuSubmit($event)" class="block w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-blue-50 file:text-blue-700
+               hover:file:bg-blue-100" />
+              </UFormGroup>
+              <UFormGroup label="Xizmat" v-if="statusService == 'false'">
                 <UTextarea v-model="editArticle.services" placeholder="Xizmatlar" />
               </UFormGroup>
               <UFormGroup label="Hashtag">
@@ -324,6 +370,7 @@ import { useRoute } from 'vue-router'
 import { ref, computed, onMounted } from 'vue'
 import { articleSchema } from '~/schemas'
 import { formData } from '~/utils'
+import { USelect } from '#components'
 const config = useRuntimeConfig()
 const status = ref('published');
 const options = [
@@ -344,12 +391,45 @@ const { coords, error, getLocation } = useGeolocation()
 onMounted(() => {
   getLocation()
   setTimeout(() => {
-    form.value.latitude = coords.value.latitude
-    form.value.longitude = coords.value.longitude
+    form.value.latitude = coords.value?.latitude
+    form.value.longitude = coords.value?.longitude
 
   }, 2000)
 
 })
+
+const images = ref([{ image: '' }]);
+
+const bannerSubmit = (event, index) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      images.value[index].image = reader.result;
+    };
+    reader.readAsDataURL(file);
+    // urls.value.push(file)
+  }
+};
+const menuSubmit = (event, index) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.value.menu = file;
+    editArticle.value.menu = file
+  }
+};
+const bannerCreate = (index) => {
+  images.value.push({
+    image: ''
+  });
+};
+
+const bannerRemove = (index) => {
+  images.value.splice(index, 1);
+};
+
+const statusService = ref('false')
+const urls = ref([])
 const route = useRoute();
 const loading = ref(false)
 const categoryId = route.params.category_id
@@ -392,16 +472,14 @@ const editArticle = ref({
   services: '',
   social_media: '',
   hashtags: '',
-  is_popular: false
-
+  is_popular: false,
+  menu: '',
 })
 async function getAll() {
   try {
     loading.value = true;
     const { data, error, refresh } = await request(`/articles?status=${status.value}&page=${articles.value.page}&page_size=${articles.value.page_size}&category_id=${categoryId}`, 'get');
-
     articles.value = data
-
   } catch (error) {
 
   } finally {
@@ -457,6 +535,7 @@ const form = ref({
   latitude: 0,
   longitude: 0,
   photo: '',
+  menu: '',
   start_date: new Date().toISOString().split('T')[0],
   end_date: new Date().toISOString().split('T')[0],
   owner_id: null,
@@ -472,8 +551,13 @@ async function submitForm() {
     categorie_id: categoryId,
     slug: ''
   }
-  postForm.hashtags = postForm.hashtags.split(',')
-  const { data, error, refresh } = await request(`/articles/create`, 'post', postForm)
+  postForm.hashtags = postForm.hashtags.split(',');
+  images.value.forEach((item) => {
+    urls.value.push(item.image)
+  })
+  const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value))
+  const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
+  if (bannerError) return;
   if (error) return;
   getAll();
   isCreateModalOpen.value = false;

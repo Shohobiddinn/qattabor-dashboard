@@ -263,6 +263,32 @@
                file:bg-blue-50 file:text-blue-700
                hover:file:bg-blue-100" />
           </UFormGroup>
+          <div class="max-h-[200px] overflow-auto">
+            <div class="flex justify-between items-center" v-for="(item, index) in imagesEdit" :key="index">
+              <UFormGroup label="Rasm [200px : 100px]">
+                <input  type="file" accept="image/*" @change="bannerSubmit($event, index)" class="block w-full text-sm text-gray-500
+                 file:mr-4 file:py-2 file:px-4
+                 file:rounded-full file:border-0
+                 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-blue-700
+                 hover:file:bg-blue-100" />
+                <img v-if="item.image" :src="item.image" alt="Image Preview"
+                  class="w-[100px] h-[100px] object-contain" />
+              </UFormGroup>
+              <div>
+                <div class="w-[100px]">
+                  <UButton icon="i-heroicons-minus" color="red" @click="bannerRemove(index)"
+                    v-if="images.length > 1 && false">
+                  </UButton>
+                </div>
+                <div class="w-[100px]">
+                  <UButton icon="i-heroicons-plus" v-if="images.length == index + 1" @click="bannerCreate(index)">
+                  </UButton>
+                </div>
+
+              </div>
+            </div>
+          </div>
           <div class="flex max-sm:flex-wrap gap-2">
             <div class="w-full">
 
@@ -406,9 +432,11 @@ const bannerSubmit = (event, index) => {
     const reader = new FileReader();
     reader.onload = () => {
       images.value[index].image = reader.result;
+      imagesEdit.value[index].image = reader.result;
+
     };
     reader.readAsDataURL(file);
-    // urls.value.push(file)
+    urls.value.push({ urls: file })
   }
 };
 const menuSubmit = (event, index) => {
@@ -422,6 +450,9 @@ const bannerCreate = (index) => {
   images.value.push({
     image: ''
   });
+  imagesEdit.value.push({
+    image: ''
+  })
 };
 
 const bannerRemove = (index) => {
@@ -442,7 +473,8 @@ const articles = ref({
   data: []
 })
 const { request } = useApi()
-
+const imagesEdit = ref([]);
+const articleIdEdit = ref('')
 const isCreateModalOpen = ref(false)
 const isEditModalOpen = ref(false)
 const editArticle = ref({
@@ -492,15 +524,28 @@ getAll();
 
 // Tahrirlash
 const openEditModal = (article) => {
-  editArticle.value = { ...article }
+  editArticle.value = { ...article };
+  imagesEdit.value = []
+  article?.article_media[0]?.url.forEach((item) => {
+    imagesEdit.value.push({ image: `https://api.qattabor.uz/${item}` })
+
+  })
+  articleIdEdit.value = article?.article_media[0]?.id
   isEditModalOpen.value = true
 }
 
 async function saveArticle() {
+  for (const item of urls.value) {
+    const { error: bannerError } = await request(`/media/update`, 'put', formData({ id: articleIdEdit.value, ...item }));
+    if (bannerError) {
+      console.error('Banner error:', bannerError);
+      return;
+    }
+  }
   const { data, error, refresh } = await request(`/articles/update`, 'put', formData(editArticle.value))
   if (error) return;
-  getAll();
-  isEditModalOpen.value = false
+  isEditModalOpen.value = false;
+  window.location.reload();
 }
 
 // O‘chirish
@@ -552,15 +597,21 @@ async function submitForm() {
     slug: ''
   }
   postForm.hashtags = postForm.hashtags.split(',');
-  images.value.forEach((item) => {
-    urls.value.push(item.image)
-  })
-  const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value))
+  // images.value.forEach((item) => {
+  //   urls.value.push(item.image)
+  // })
+  for (const item of urls.value) {
+    const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
+    if (bannerError) {
+      console.error('Banner error:', bannerError);
+      return;
+    }
+  }
   const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
-  if (bannerError) return;
   if (error) return;
-  getAll();
   isCreateModalOpen.value = false;
+  window.location.reload();
+
 }
 async function getRegionList() {
   const { data, error, refresh } = await request(`/region/all?page=1&page_size=100&status=actived`, 'get')

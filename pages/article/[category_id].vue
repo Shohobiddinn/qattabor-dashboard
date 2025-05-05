@@ -533,7 +533,7 @@ const openEditModal = (article) => {
   } else {
     imagesEdit.value.push({ image: '' })
   }
-  articleIdEdit.value = article?.article_media[0]?.id
+  articleIdEdit.value = article?.id
   isEditModalOpen.value = true
 }
 const loadingSubmit = ref(false);
@@ -541,7 +541,9 @@ const loadingSubmit = ref(false);
 async function saveArticle() {
   loadingSubmit.value = true
   for (const item of urls.value) {
-    const { error: bannerError } = await request(`/media/update`, 'put', formData({ id: articleIdEdit.value, ...item }));
+    console.log(articleIdEdit.value);
+    
+    const { error: bannerError } = await request(`/media/update`, 'put', formData({ article_id: articleIdEdit.value, ...item }));
     if (bannerError) {
       console.error('Banner error:', bannerError);
       return;
@@ -616,14 +618,14 @@ async function submitForm() {
   // images.value.forEach((item) => {
   //   urls.value.push(item.image)
   // })
-  // for (const item of urls.value) {
-  //   const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
-  //   if (bannerError) {
-  //     console.error('Banner error:', bannerError);
-  //     return;
-  //   }
-  // }
-  const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value));
+  for (const item of urls.value) {
+    const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
+    if (bannerError) {
+      console.error('Banner error:', bannerError);
+      return;
+    }
+  }
+  // const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value));
 
   const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
   if (error) return;

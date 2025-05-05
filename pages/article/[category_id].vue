@@ -540,27 +540,31 @@ const loadingSubmit = ref(false);
 
 async function saveArticle() {
   loadingSubmit.value = true
-  for (const item of urls.value) {
-    console.log(articleIdEdit.value);
-    
-    const { error: bannerError } = await request(`/media/update`, 'put', formData({ article_id: articleIdEdit.value, ...item }));
-    if (bannerError) {
-      console.error('Banner error:', bannerError);
-      return;
+  try {
+    for (const item of urls.value) {
+      console.log(articleIdEdit.value);
+
+      const { error: bannerError } = await request(`/media/update`, 'put', formData({ article_id: articleIdEdit.value, ...item }));
+      if (bannerError) {
+        console.error('Banner error:', bannerError);
+        return;
+      }
     }
+    const { data, error, refresh } = await request(`/articles/update`, 'put', formData(editArticle.value))
+    if (error) return;
+    isEditModalOpen.value = false;
+    articles.value = {
+      page: 1,
+      page_size: 12,
+      total_count: 3,
+      total_pages: 1,
+      data: []
+    }
+    getAll();
+  } catch (err) { } finally {
+    loadingSubmit.value = false
   }
-  const { data, error, refresh } = await request(`/articles/update`, 'put', formData(editArticle.value))
-  if (error) return;
-  isEditModalOpen.value = false;
-  articles.value = {
-    page: 1,
-    page_size: 12,
-    total_count: 3,
-    total_pages: 1,
-    data: []
-  }
-  getAll();
-  loadingSubmit.value = false
+
 }
 
 // O‘chirish
@@ -607,38 +611,45 @@ const form = ref({
 const regions = ref([]);
 async function submitForm() {
   loadingSubmit.value = true;
-  let postForm = {
-    ...form.value,
-    categorie_id: categoryId,
-    slug: ''
-  }
-  postForm.hashtags = postForm.hashtags.split(',');
-  console.log(urls.value);
 
-  // images.value.forEach((item) => {
-  //   urls.value.push(item.image)
-  // })
-  for (const item of urls.value) {
-    const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
-    if (bannerError) {
-      console.error('Banner error:', bannerError);
-      return;
+  try {
+    let postForm = {
+      ...form.value,
+      categorie_id: categoryId,
+      slug: ''
     }
-  }
-  // const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value));
+    postForm.hashtags = postForm.hashtags.split(',');
+    console.log(urls.value);
 
-  const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
-  if (error) return;
-  isCreateModalOpen.value = false;
-  articles.value = {
-    page: 1,
-    page_size: 12,
-    total_count: 3,
-    total_pages: 1,
-    data: []
+    // images.value.forEach((item) => {
+    //   urls.value.push(item.image)
+    // })
+    for (const item of urls.value) {
+      const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
+      if (bannerError) {
+        console.error('Banner error:', bannerError);
+        return;
+      }
+    }
+    // const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value));
+
+    const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
+    if (error) return;
+    isCreateModalOpen.value = false;
+    articles.value = {
+      page: 1,
+      page_size: 12,
+      total_count: 3,
+      total_pages: 1,
+      data: []
+    }
+    getAll();
+  } catch (error) {
+
+  } finally {
+    loadingSubmit.value = false;
   }
-  getAll();
-  loadingSubmit.value = false;
+
 }
 async function getRegionList() {
   const { data, error, refresh } = await request(`/region/all?page=1&page_size=100&status=actived`, 'get')

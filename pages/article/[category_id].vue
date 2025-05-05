@@ -228,7 +228,7 @@
 
 
 
-          <UButton type="submit" color="primary" block>
+          <UButton type="submit" color="primary" block :loading="loadingSubmit">
             Yuborish
           </UButton>
         </UForm>
@@ -266,7 +266,7 @@
           <div class="max-h-[200px] overflow-auto">
             <div class="flex justify-between items-center" v-for="(item, index) in imagesEdit" :key="index">
               <UFormGroup label="Rasm [200px : 100px]">
-                <input  type="file" accept="image/*" @change="bannerSubmit($event, index)" class="block w-full text-sm text-gray-500
+                <input type="file" accept="image/*" @change="bannerSubmit($event, index)" class="block w-full text-sm text-gray-500
                  file:mr-4 file:py-2 file:px-4
                  file:rounded-full file:border-0
                  file:text-sm file:font-semibold
@@ -382,7 +382,7 @@
               </UFormGroup>
             </div>
           </div>
-          <UButton type="submit" color="primary" block>
+          <UButton type="submit" color="primary" block :loading="loadingSubmit">
             Yuborish
           </UButton>
         </UForm>
@@ -526,15 +526,20 @@ getAll();
 const openEditModal = (article) => {
   editArticle.value = { ...article };
   imagesEdit.value = []
-  article?.article_media[0]?.url.forEach((item) => {
-    imagesEdit.value.push({ image: `https://api.qattabor.uz/${item}` })
-
-  })
+  if (article?.article_media[0]?.url?.length > 0) {
+    article?.article_media[0]?.url.forEach((item) => {
+      imagesEdit.value.push({ image: `https://api.qattabor.uz/${item}` })
+    })
+  } else {
+    imagesEdit.value.push({ image: '' })
+  }
   articleIdEdit.value = article?.article_media[0]?.id
   isEditModalOpen.value = true
 }
+const loadingSubmit = ref(false);
 
 async function saveArticle() {
+  loadingSubmit.value = true
   for (const item of urls.value) {
     const { error: bannerError } = await request(`/media/update`, 'put', formData({ id: articleIdEdit.value, ...item }));
     if (bannerError) {
@@ -545,7 +550,15 @@ async function saveArticle() {
   const { data, error, refresh } = await request(`/articles/update`, 'put', formData(editArticle.value))
   if (error) return;
   isEditModalOpen.value = false;
-  window.location.reload();
+  articles.value = {
+    page: 1,
+    page_size: 12,
+    total_count: 3,
+    total_pages: 1,
+    data: []
+  }
+  getAll();
+  loadingSubmit.value = false
 }
 
 // O‘chirish
@@ -591,27 +604,39 @@ const form = ref({
 })
 const regions = ref([]);
 async function submitForm() {
+  loadingSubmit.value = true;
   let postForm = {
     ...form.value,
     categorie_id: categoryId,
     slug: ''
   }
   postForm.hashtags = postForm.hashtags.split(',');
+  console.log(urls.value);
+
   // images.value.forEach((item) => {
   //   urls.value.push(item.image)
   // })
-  for (const item of urls.value) {
-    const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
-    if (bannerError) {
-      console.error('Banner error:', bannerError);
-      return;
-    }
-  }
+  // for (const item of urls.value) {
+  //   const { error: bannerError } = await request(`/media/create`, 'post', formData(item));
+  //   if (bannerError) {
+  //     console.error('Banner error:', bannerError);
+  //     return;
+  //   }
+  // }
+  const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value));
+
   const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
   if (error) return;
   isCreateModalOpen.value = false;
-  window.location.reload();
-
+  articles.value = {
+    page: 1,
+    page_size: 12,
+    total_count: 3,
+    total_pages: 1,
+    data: []
+  }
+  getAll();
+  loadingSubmit.value = false;
 }
 async function getRegionList() {
   const { data, error, refresh } = await request(`/region/all?page=1&page_size=100&status=actived`, 'get')

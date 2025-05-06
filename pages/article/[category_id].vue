@@ -32,6 +32,11 @@
                     class="justify-start">
                     Tahrirlash
                   </UButton>
+                  <UButton icon="line-md-image-filled" variant="ghost" @click="openImageModal(hotel)"
+                    class="justify-start">
+                    Rasmlar
+                  </UButton>
+
                   <UButton icon="i-heroicons-trash" color="red" variant="ghost" @click="deleteArticle(hotel.id)"
                     class="justify-start">
                     O‘chirish
@@ -80,6 +85,7 @@
         </template>
       </UCard>
     </div>
+    <UPagination v-model="articles.page" :page-count="12" :total="articles.total_count" v-if="articles.data.length" />
     <div v-else class="text-center text-gray-500">Hozircha maqolalar yo‘q.</div>
 
     <!-- Qo‘shish modal -->
@@ -102,41 +108,6 @@
           </div>
         </template>
         <UForm :state="form" :schema="articleSchema" @submit="submitForm" class="space-y-4">
-          <UFormGroup name="photo" label="Muqova [200px : 100px]">
-            <input required type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
-          </UFormGroup>
-          <div class="max-h-[200px] overflow-auto">
-            <div class="flex justify-between items-center" v-for="(item, index) in images" :key="index">
-              <UFormGroup label="Rasm [200px : 100px]">
-                <input required type="file" accept="image/*" @change="bannerSubmit($event, index)" class="block w-full text-sm text-gray-500
-                 file:mr-4 file:py-2 file:px-4
-                 file:rounded-full file:border-0
-                 file:text-sm file:font-semibold
-                 file:bg-blue-50 file:text-blue-700
-                 hover:file:bg-blue-100" />
-                <img v-if="item.image" :src="item.image" alt="Image Preview"
-                  class="w-[100px] h-[100px] object-contain" />
-              </UFormGroup>
-              <div>
-                <div class="w-[100px]">
-                  <UButton icon="i-heroicons-minus" color="red" @click="bannerRemove(index)"
-                    v-if="images.length > 1 && false">
-                  </UButton>
-                </div>
-                <div class="w-[100px]">
-                  <UButton icon="i-heroicons-plus" v-if="images.length == index + 1" @click="bannerCreate(index)">
-                  </UButton>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
           <div class="flex max-sm:flex-wrap gap-2">
             <div class="w-full">
               <UFormGroup name="region_id" label="Hudud">
@@ -200,20 +171,8 @@
               </UFormGroup>
             </div>
             <div class="w-full">
-              <UFormGroup>
-                <USelect v-model="statusService"
-                  :options="[{ name: 'Media', status: true }, { name: 'Xizmat', status: false }]"
-                  option-attribute="name" value-attribute="status" placeholder="Xizmat turi" />
-              </UFormGroup>
-              <UFormGroup v-if="statusService == 'true'" label="Menu [200px : 100px]">
-                <input required type="file" accept="image/*" @change="menuSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
-              </UFormGroup>
-              <UFormGroup label="Xizmat" v-if="statusService == 'false'">
+
+              <UFormGroup label="Xizmat">
                 <UTextarea v-model="form.services" placeholder="Xizmatlar" />
               </UFormGroup>
               <UFormGroup label="Hashtag">
@@ -388,6 +347,93 @@
         </UForm>
       </UCard>
     </UModal>
+    <!-- Image modal -->
+    <UModal v-model="isImageModalOpen" fullscreen>
+      <UCard :ui="{
+        base: 'h-full flex flex-col',
+        rounded: '',
+        divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+        body: {
+          base: 'grow'
+        }
+      }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+              Manzil rasmlari
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
+              @click="isImageModalOpen = false" />
+          </div>
+        </template>
+        <div class="space-y-2 max-h-[90vh] overflow-auto">
+          <hr>
+          <h1 class="text-[20px]">Muqova</h1>
+
+          <div v-if="article_banner" class="grid grid-cols-3 gap-2 max-sm:grid-cols-1 mb-2">
+
+            <img :src="config.public.apiImgUrl + article_banner" alt="" class="w-full h-[200px] object-cover">
+
+          </div>
+          <UForm class="space-y-4">
+            <UFormGroup name="banner" label="Muqova [200px : 100px]">
+              <input type="file" accept="image/*" name="banners" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-blue-50 file:text-blue-700
+               hover:file:bg-blue-100" />
+            </UFormGroup>
+          </UForm>
+          <hr>
+
+          <h1 class="text-[20px]">Media</h1>
+
+          <div v-if="article_media?.length" class="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
+            <div class="relative" v-for="(item, index) in article_media" :key="index">
+
+              <img v-if="item.type == 'photo'" :src="config.public.apiImgUrl + item?.url" alt=""
+                class="w-full h-[200px] object-cover">
+              <video v-else :src="config.public.apiImgUrl + item?.url" controls class="w-full h-[200px] object-cover"></video>
+              <UButton class="absolute top-2 right-2" icon="i-heroicons-trash" color="red"
+                @click="photoDelete('media', item?.id)"></UButton>
+            </div>
+          </div>
+          <UForm class="space-y-4">
+            <UFormGroup name="Media " label="Media [200px : 100px]">
+              <input type="file" accept="image/* video/*" name="media" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-blue-50 file:text-blue-700
+               hover:file:bg-blue-100" />
+            </UFormGroup>
+          </UForm>
+          <hr>
+
+          <h1 class="text-[20px]">Menu</h1>
+          <div v-if="additional_files?.length" class="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
+            <div class="relative" v-for="(item, index) in additional_files" :key="index">
+              <img :src="config.public.apiImgUrl + item?.url" alt="" class="w-full h-[200px] object-cover">
+
+              <UButton class="absolute top-2 right-2" icon="i-heroicons-trash" color="red"
+                @click="photoDelete('additional_files', item?.id)"></UButton>
+            </div>
+          </div>
+          <UForm class="space-y-4">
+            <UFormGroup name="Menu" label="Menu [200px : 100px]">
+              <input type="file" accept="image/*" name="additional_files" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-blue-50 file:text-blue-700
+               hover:file:bg-blue-100" />
+            </UFormGroup>
+          </UForm>
+
+        </div>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
@@ -423,7 +469,7 @@ onMounted(() => {
   }, 2000)
 
 })
-
+const article_id = ref('');
 const images = ref([{ image: '' }]);
 
 const bannerSubmit = (event, index) => {
@@ -476,7 +522,8 @@ const { request } = useApi()
 const imagesEdit = ref([]);
 const articleIdEdit = ref('')
 const isCreateModalOpen = ref(false)
-const isEditModalOpen = ref(false)
+const isEditModalOpen = ref(false);
+const isImageModalOpen = ref(false);
 const editArticle = ref({
   id: 0,
   author_id: 0,
@@ -536,14 +583,24 @@ const openEditModal = (article) => {
   articleIdEdit.value = article?.id
   isEditModalOpen.value = true
 }
+const article_banner = ref('');
+const article_media = ref('');
+const additional_files = ref('');
+const openImageModal = (article) => {
+  if (article) {
+    article_banner.value = article.article_banner[0]?.urls;
+    article_media.value = article.article_media;
+    additional_files.value = article.additional_files;
+  }
+  article_id.value = article.id
+  isImageModalOpen.value = true;
+}
 const loadingSubmit = ref(false);
 
 async function saveArticle() {
   loadingSubmit.value = true
   try {
     for (const item of urls.value) {
-      console.log(articleIdEdit.value);
-
       const { error: bannerError } = await request(`/media/update`, 'put', formData({ article_id: articleIdEdit.value, ...item }));
       if (bannerError) {
         console.error('Banner error:', bannerError);
@@ -633,7 +690,7 @@ async function submitForm() {
     }
     // const { error: bannerError } = await request(`/media/create`, 'post', formData(urls.value));
 
-    const { data, error, refresh } = await request(`/articles/create`, 'post', formData(postForm));
+    const { data, error, refresh } = await request(`/articles/create`, 'post', postForm);
     if (error) return;
     isCreateModalOpen.value = false;
     articles.value = {
@@ -659,10 +716,27 @@ getRegionList();
 async function photoSubmit(event) {
   const file = event.target.files[0]
   if (file) {
-    const { data, error, refresh } = await request(`/banners/create`, 'post', formData({ urls: file }))
+    const { data, error, refresh } = await request(`/${event.target.name}/create`, 'post', formData({ article_id: article_id.value, urls: file }))
+    if (error) return;
   }
+  const { data, error, refresh } = await request(`/article?id=${article_id.value}`)
+  if (data) {
+    article_banner.value = data.article_banner[0]?.urls;
+    article_media.value = data.article_media;
+    additional_files.value = data.additional_files;
+  }
+}
+async function photoDelete(sourse, id) {
 
+  const { error: deleteError } = await request(`/${sourse}/delete?id=${id}`, 'delete')
+  if (deleteError) return;
 
+  const { data, error, refresh } = await request(`/article?id=${article_id.value}`)
+  if (data) {
+    article_banner.value = data.article_banner[0]?.urls;
+    article_media.value = data.article_media;
+    additional_files.value = data.additional_files;
+  }
 }
 watch(() => articles.value.page, () => {
   getAll();

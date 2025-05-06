@@ -121,9 +121,6 @@
                 <UInput v-model="form.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
               <div class="flex justify-between">
-                <UFormGroup name="is_ad" label="Reklama holati">
-                  <UToggle v-model="form.is_ad" />
-                </UFormGroup>
                 <UFormGroup name="is_popular" label="Mashxur">
                   <UToggle v-model="form.is_popular" />
                 </UFormGroup>
@@ -214,14 +211,6 @@
           </div>
         </template>
         <UForm :state="editArticle" :schema="articleSchema" @submit="saveArticle" class="space-y-4">
-          <UFormGroup name="photo" label="Rasm [200px : 100px]">
-            <input type="file" accept="image/*" @change="photoSubmit($event)" class="block w-full text-sm text-gray-500
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-blue-50 file:text-blue-700
-               hover:file:bg-blue-100" />
-          </UFormGroup>
           <div class="max-h-[200px] overflow-auto">
             <div class="flex justify-between items-center" v-for="(item, index) in imagesEdit" :key="index">
               <UFormGroup label="Rasm [200px : 100px]">
@@ -263,9 +252,6 @@
                 <UInput v-model="editArticle.title.ru" placeholder="Sarlavha" />
               </UFormGroup>
               <div class="flex justify-between">
-                <UFormGroup name="is_ad" label="Reklama holati">
-                  <UToggle v-model="editArticle.is_ad" />
-                </UFormGroup>
                 <UFormGroup name="is_popular" label="Mashxur">
                   <UToggle v-model="editArticle.is_popular" />
                 </UFormGroup>
@@ -529,7 +515,6 @@ const editArticle = ref({
   author_id: 0,
   categorie_id: 0,
   region_id: 0,
-  is_ad: false,
   title: {
     uz: '',
     ru: ''
@@ -572,14 +557,6 @@ getAll();
 // Tahrirlash
 const openEditModal = (article) => {
   editArticle.value = { ...article };
-  imagesEdit.value = []
-  if (article?.article_media[0]?.url?.length > 0) {
-    article?.article_media[0]?.url.forEach((item) => {
-      imagesEdit.value.push({ image: `https://api.qattabor.uz/${item}` })
-    })
-  } else {
-    imagesEdit.value.push({ image: '' })
-  }
   articleIdEdit.value = article?.id
   isEditModalOpen.value = true
 }
@@ -638,7 +615,6 @@ const form = ref({
   author_id: 0,
   categorie_id: 0,
   region_id: 0,
-  is_ad: false,
   title: {
     uz: '',
     ru: ''
@@ -746,7 +722,6 @@ watch(() => isCreateModalOpen.value, () => {
     author_id: 0,
     categorie_id: 0,
     region_id: 0,
-    is_ad: false,
     title: {
       uz: '',
       ru: ''

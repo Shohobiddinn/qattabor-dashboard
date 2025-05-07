@@ -584,7 +584,7 @@ async function saveArticle() {
         return;
       }
     }
-    const { data, error, refresh } = await request(`/articles/update`, 'put', formData(editArticle.value))
+    const { data, error, refresh } = await request(`/articles/update`, 'put', editArticle.value)
     if (error) return;
     isEditModalOpen.value = false;
     articles.value = {

@@ -380,7 +380,8 @@
 
               <img v-if="item.type == 'photo'" :src="config.public.apiImgUrl + item?.url" alt=""
                 class="w-full h-[200px] object-cover">
-              <video v-else :src="config.public.apiImgUrl + item?.url" controls class="w-full h-[200px] object-cover"></video>
+              <video v-else :src="config.public.apiImgUrl + item?.url" controls
+                class="w-full h-[200px] object-cover"></video>
               <UButton class="absolute top-2 right-2" icon="i-heroicons-trash" color="red"
                 @click="photoDelete('media', item?.id)"></UButton>
             </div>
@@ -435,10 +436,6 @@ const options = [
   {
     name: 'No faol',
     value: 'inactived'
-  },
-  {
-    name: 'Kutilmoqda',
-    value: 'waiting'
   },
   {
     name: 'Faol',
@@ -543,7 +540,15 @@ async function getAll() {
   try {
     loading.value = true;
     const { data, error, refresh } = await request(`/articles?status=${status.value}&page=${articles.value.page}&page_size=${articles.value.page_size}&category_id=${categoryId}`, 'get');
-    articles.value = data
+    if (status.value == 'inactived') {
+      for (const item of data.data) {
+        item.status = false;
+      }
+      articles.value = data;
+    } else if (status.value == 'published') {
+      articles.value = data;
+    }
+
   } catch (error) {
 
   } finally {
@@ -575,6 +580,12 @@ const openImageModal = (article) => {
 const loadingSubmit = ref(false);
 
 async function saveArticle() {
+  if (editArticle.value.status === true) {
+    editArticle.value.status = 'published'
+  }
+  if (editArticle.value.status === false) {
+    editArticle.value.status = 'inactived'
+  }
   loadingSubmit.value = true
   try {
     for (const item of urls.value) {

@@ -62,12 +62,20 @@
 
         <template #footer>
           <div class="flex flex-col gap-2">
-            <NuxtLink :to="`/article/${category.id}`">
-              <UButton icon="i-heroicons-document-plus" block color="primary">
-                Article qo‘shish
-              </UButton>
-            </NuxtLink>
+            <div class="grid grid-cols-2  gap-1  ">
+              <NuxtLink :to="`/article/${category.id}`">
+                <UButton icon="i-heroicons-document-plus" block color="primary">
+                  Article qo‘shish
+                </UButton>
+              </NuxtLink>
+              <NuxtLink :to="`/category/${category.id}`">
+                <UButton block color="primary">
+                  Put Kategoriya
+                </UButton>
 
+              </NuxtLink>
+
+            </div>
             <div class="text-xs text-gray-400 text-right">
               Yangilangan: {{ new Date(category.updated_at).toLocaleString('uz-UZ') }}
             </div>

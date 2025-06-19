@@ -30,6 +30,10 @@
                                         @click="openEditModal(item)" class="justify-start">
                                         Tahrirlash
                                     </UButton>
+                                    <UButton icon="material-symbols:360" variant="ghost" @click="sendAds(item.id)"
+                                        class="justify-start">
+                                        Botga reklama jo'natish
+                                    </UButton>
                                     <UButton icon="i-heroicons-trash" color="red" variant="ghost"
                                         @click="deleteAds(item.id)" class="justify-start">
                                         O‘chirish
@@ -142,6 +146,7 @@
 </template>
 
 <script setup>
+import Swal from 'sweetalert2';
 import { ref, watch } from 'vue';
 const { request } = useApi();
 import { adsSchema } from '~/schemas';
@@ -217,6 +222,21 @@ const deleteAds = async (id) => {
 const openEditModal = (item) => {
     editAds.value = { ...item }
     isEditModalOpen.value = true
+}
+const sendAds =  (id) => {
+    Swal.fire({
+        title: "Reklama botga jo'natilsinmi ?",
+        cancelButtonText: "Yo'q",
+        confirmButtonText: "Ha",
+        showCloseButton: true,
+        showConfirmButton: true,
+        showCancelButton: true,
+    }).then((res) => {
+        if (res.isConfirmed) { request(`/ads/resend?id=${id}`, 'post').then((r)=>{
+                getAll();
+            })
+        }
+    });
 }
 watch(() => ads.value.page, () => {
     getAll();

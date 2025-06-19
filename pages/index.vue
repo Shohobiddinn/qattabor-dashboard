@@ -69,8 +69,8 @@
                 </UButton>
               </NuxtLink>
               <NuxtLink :to="`/category/${category.id}`">
-                <UButton block color="primary">
-                  Put Kategoriya
+                <UButton icon="hugeicons:add-circle-half-dot" block color="primary">
+                 Qism
                 </UButton>
 
               </NuxtLink>

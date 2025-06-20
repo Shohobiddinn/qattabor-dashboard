@@ -35,7 +35,15 @@ const deleteFeedback = async (item) => {
         if (result.isConfirmed) {
             const { data, error } = request(`/feedbacks/delete?id=${item.id}`, 'delete');
             if (!error) {
-                getAll();
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Fikr o'chirildi !",
+                        icon: "success",
+                        confirmButtonText: "Yakunlash"
+                    });
+                    getAll();
+
+                }, 500);
             }
         }
     });
@@ -52,7 +60,7 @@ watch(() => feedbacks.value.page, () => {
         <div class="flex">
             <UInput v-model="search" type="search" @input="getAll" placeholder="Qidiruv..."
                 class="w-full sm:w-auto flex-1" />
-            <UButton  icon="hugeicons:search-02" @click="getAll" class="w-full sm:w-auto" />
+            <UButton icon="hugeicons:search-02" @click="getAll" class="w-full sm:w-auto" />
 
         </div>
     </div>
